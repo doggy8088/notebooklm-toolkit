@@ -39,7 +39,7 @@ jobs:
       - name: Create ZIP package
         run: |
           $filePath = "Extension_v${{ steps.get_version.outputs.version }}.zip"
-          7z a $filePath _locales images src CHANGELOG.md manifest.json README.*
+          7z a $filePath _locales content background assets options popup CHANGELOG.md manifest.json README.*
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1

@@ -1,9 +1,9 @@
 {
   "tool_name": {
-    "message": "Felo Search Toolkit"
+    "message": "NotebookLM Toolkit"
   },
   "tool_description": {
-    "message": "Enhances your Felo Search experience with shortcuts and quick access buttons for the Felo Search website."
+    "message": "Enhance your NotebookLM web experience with keyboard shortcuts, enhanced buttons, and quick access to NotebookLM."
   },
   "tool_author": {
     "message": "Will Huang"

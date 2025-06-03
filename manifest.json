@@ -8,9 +8,8 @@
   "background": {
     "service_worker": "background/service-worker.js"
   },
-  "options_page": "options/options.html",
   "action": {
-    "default_popup": "popup/popup.html",
+    "default_popup": "",
     "default_icon": {
       "16": "assets/icons/icon16.png",
       "48": "assets/icons/icon48.png",
@@ -28,9 +27,12 @@
         "content/content-script.js"
       ],
       "matches": [
-        "<all_urls>"
+        "https://notebooklm.google.com/*"
       ]
     }
+  ],
+  "host_permissions": [
+    "https://notebooklm.google.com/*"
   ],
   "permissions": [
     "notifications",

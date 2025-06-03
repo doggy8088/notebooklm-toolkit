@@ -1,9 +1,9 @@
 {
     "tool_name": {
-        "message": "Felo Search 萬能工具箱"
+        "message": "NotebookLM 萬能工具箱"
     },
     "tool_description": {
-        "message": "提升 Felo Search 網站的使用體驗，提供快速鍵與快速開啟 Felo Search 網站的按鈕。"
+        "message": "提升 NotebookLM 網站的使用體驗，提供快速鍵、增強按鈕與快速開啟 NotebookLM 網站的按鈕。"
     },
     "tool_author": {
         "message": "Will 保哥"

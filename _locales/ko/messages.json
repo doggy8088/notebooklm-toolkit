@@ -1,9 +1,9 @@
 {
   "tool_name": {
-    "message": "Felo Search 툴킷"
+    "message": "NotebookLM 툴킷"
   },
   "tool_description": {
-    "message": "Felo Search 웹사이트에 대한 단축키와 빠른 액세스 버튼으로 Felo Search 사용 경험을 향상시킵니다."
+    "message": "키보드 단축키, 향상된 버튼, NotebookLM 빠른 접근으로 NotebookLM 웹사이트 사용 경험을 향상시킵니다."
   },
   "tool_author": {
     "message": "Will Huang"
