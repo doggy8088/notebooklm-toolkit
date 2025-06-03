@@ -1,0 +1,11 @@
+{
+  "tool_name": {
+    "message": "Felo Search Toolkit"
+  },
+  "tool_description": {
+    "message": "Enhances your Felo Search experience with shortcuts and quick access buttons for the Felo Search website."
+  },
+  "tool_author": {
+    "message": "Will Huang"
+  }
+}

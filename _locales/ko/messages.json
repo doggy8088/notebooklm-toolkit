@@ -1,0 +1,11 @@
+{
+  "tool_name": {
+    "message": "Felo Search 툴킷"
+  },
+  "tool_description": {
+    "message": "Felo Search 웹사이트에 대한 단축키와 빠른 액세스 버튼으로 Felo Search 사용 경험을 향상시킵니다."
+  },
+  "tool_author": {
+    "message": "Will Huang"
+  }
+}
