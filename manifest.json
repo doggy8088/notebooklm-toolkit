@@ -3,7 +3,7 @@
   "name": "__MSG_tool_name__",
   "description": "__MSG_tool_description__",
   "author": "__MSG_tool_author__",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "default_locale": "zh_TW",
   "background": {
     "service_worker": "background/service-worker.js"
@@ -24,6 +24,7 @@
   "content_scripts": [
     {
       "js": [
+        "content/turndown.browser.umd.js",
         "content/content-script.js"
       ],
       "matches": [

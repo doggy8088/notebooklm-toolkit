@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.5.0 (2025/6/5)
+
+  - Add HTML to Markdown feature.
+
 - 0.4.0 (2025/6/5)
 
   - Add new languages: de, es, fr

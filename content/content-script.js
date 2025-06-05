@@ -564,13 +564,33 @@
         // Use the Clipboard API for modern browsers
         if (navigator.clipboard && navigator.clipboard.write) {
             try {
-                // Create a Blob with the HTML content
+                // 建立 HTML Blob
                 const htmlBlob = new Blob([html], { type: 'text/html' });
 
-                // Create a ClipboardItem with the Blob
-                const clipboardItem = new ClipboardItem({ 'text/html': htmlBlob });
+                const turndownService = new TurndownService({
+                    headingStyle: 'atx',
+                    hr: '- - -',
+                    bulletListMarker: '-',
+                    codeBlockStyle: 'fenced',
+                    fence: '```',
+                    emDelimiter: '_',
+                    strongDelimiter: '**',
+                    linkStyle: 'inlined',
+                    linkReferenceStyle: 'full',
+                    br: '  ',
+                    preformattedCode: false
+                });
 
-                // Write the ClipboardItem to the clipboard
+                // 建立純文字 Blob
+                const textBlob = new Blob([turndownService.turndown(html)], { type: 'text/plain' });
+
+                // 建立 ClipboardItem，包含 text/html 與 text/plain
+                const clipboardItem = new ClipboardItem({
+                    'text/html': htmlBlob,
+                    'text/plain': textBlob
+                });
+
+                // 寫入剪貼簿
                 await navigator.clipboard.write([clipboardItem]);
                 return true;
             } catch (err) {
