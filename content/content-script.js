@@ -25,6 +25,78 @@
                 await insertDownloadMarkdownButton(svg);
             }
         }
+
+        const divPanelFooter = findPanelFooter();
+        if (divPanelFooter) {
+            const editor = divPanelFooter.previousElementSibling?.querySelector('markdown-editor-legacy') ||
+                divPanelFooter.previousElementSibling?.querySelector('labs-tailwind-doc-viewer');
+            if (editor && !editor.querySelector('.copy-note-html-btn')) {
+                // console.log('Inserting copy button into editor:', editor);
+
+                // 建立按鈕
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-note-html-btn mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger note-editor-delete-button note-editor-delete-button-3panel mat-primary cdk-focused cdk-mouse-focused';
+                copyBtn.style.position = 'absolute';
+                copyBtn.style.top = '8px';
+                copyBtn.style.right = '8px';
+                copyBtn.style.zIndex = '10';
+                copyBtn.style.display = '';
+                copyBtn.style.background = 'transparent';
+                copyBtn.style.border = 'none';
+                copyBtn.style.cursor = 'pointer';
+                copyBtn.style.padding = '4px';
+
+                // 建立 mat-icon
+                const matIcon = document.createElement('mat-icon');
+                matIcon.className = 'mat-icon notranslate material-symbols-outlined google-symbols mat-icon-no-color';
+                matIcon.textContent = 'content_copy';
+                matIcon.title = '複製內容';
+                copyBtn.appendChild(matIcon);
+
+                // 點擊複製
+                copyBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    // clone editor element
+                    const clonedEditor = editor.cloneNode(true); // 複製含子元素
+                    // console.log('已複製 editor 元素:', clonedEditor);
+
+                    // 把所有資料來源引用移除，移除所有 span.ng-star-inserted 元素
+                    const starInsertedButtons = clonedEditor.querySelectorAll('span.ng-star-inserted > button.ng-star-inserted');
+                    // console.log(`將移除 ${starInsertedButtons.length} 個 button.ng-star-inserted 元素`);
+                    starInsertedButtons.forEach(btn => {
+                        let span = btn.parentElement;
+                        span.remove();
+                    });
+
+                    // 移除自訂按鈕
+                    const buttonsToRemove = clonedEditor.querySelectorAll('button');
+                    // console.log(`將移除 ${buttonsToRemove.length} 個自訂按鈕`);
+                    buttonsToRemove.forEach(span => {
+                        span.remove();
+                    });
+
+                    const cleanedClonedEditor = await cleanHtml(clonedEditor);
+
+                    // console.log('已移除 span.ng-star-inserted 和自訂按鈕，準備複製 HTML 到剪貼簿。', cleanedClonedEditor);
+                    await copyHtmlAsRichText(cleanedClonedEditor.outerHTML);
+                });
+
+                // 設定 markdownEditor 為 relative 以便定位
+                editor.style.position = 'relative';
+
+                // hover 顯示按鈕
+                editor.addEventListener('mouseenter', () => {
+                    copyBtn.style.display = '';
+                });
+                editor.addEventListener('mouseleave', () => {
+                    copyBtn.style.display = 'none';
+                });
+
+                // 插入按鈕
+                editor.appendChild(copyBtn);
+            }
+        }
     }, 1000);
 
     async function InsertOpenAllButton() {
@@ -192,7 +264,7 @@
         if (!svgElement) return;
 
         const markdownOutput = convertMindmapToMarkdown(svgElement.outerHTML);
-        console.log(markdownOutput);
+        // console.log(markdownOutput);
     }
 
     document.addEventListener("keydown", async (event) => {
@@ -233,7 +305,7 @@
             cancelable: true
         });
 
-        console.log('simulateMouseClick', element);
+        // console.log('simulateMouseClick', element);
 
         element.dispatchEvent(mouseEvent);
     }
@@ -247,7 +319,7 @@
             key: key
         });
 
-        console.log('simulateKeyPress', element);
+        // console.log('simulateKeyPress', element);
 
         element.dispatchEvent(keyEvent);
     }
@@ -435,6 +507,300 @@
         generateMarkdown(mainRoot, 0);
 
         return markdown;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // async function InsertCopyNoteHTMLButton(panelFooterDiv) {
+    //     const buttons = panelFooterDiv.querySelectorAll('button');
+    //     if (buttons.length == 1) {
+    //         const convertButton = buttons[0]; // 轉換成來源 Button
+    //         const clonedButton = convertButton.cloneNode(true);
+
+    //         clonedButton.addEventListener('click', async (event) => {
+    //             event.preventDefault();
+    //             await copyNodeToClipboard();
+    //         });
+
+    //         clonedButton.setAttribute('data-copy-note-html-btn', 'true');
+
+    //         const matIconElement = clonedButton.querySelector('mat-icon');
+    //         if (matIconElement) {
+    //             matIconElement.textContent = 'content_copy';
+    //             matIconElement.title = 'Copy Note HTML';
+    //             data = {
+    //                 success: true,
+    //                 message: 'Button cloned and inserted successfully, mat-icon text updated.'
+    //             };
+    //         }
+
+    //         clonedButton.querySelector('span.mdc-button__label')?.textContent = '複製內容';
+
+    //         if (data.success) {
+    //             panelFooterDiv.insertBefore(clonedButton, convertButton);
+    //         }
+
+    //     } else {
+    //         data = {
+    //             success: false,
+    //             message: 'Less than two buttons found within .mindmap-actions.'
+    //         };
+    //     }
+    // }
+
+    function handleCtrlAltB() {
+        // const divPanelFooter = findPanelFooter();
+        // if (!divPanelFooter) return;
+        // copyNodeToClipboard(divPanelFooter.previousElementSibling)
+        // console.log('Inserting Copy Note HTML Button');
+        // await InsertCopyNoteHTMLButton(divPanelFooter);
+    }
+
+    function findPanelFooter() {
+        const footer = document.querySelector('div.panel-footer');
+        if (footer) {
+            return footer;
+        } else {
+            return null;
+        }
+    }
+
+    async function copyNodeToClipboard(element) {
+        const editor = element.querySelector('markdown-editor-legacy') || element.querySelector('note-editor');
+        const success = await copyHtmlAsRichText(editor.outerHTML);
+        if (success) {
+            // console.log('HTML copied to clipboard successfully.');
+        } else {
+            console.error('Failed to copy HTML to clipboard.');
+        }
+    }
+
+    async function copyHtmlAsRichText(html) {
+        // Use the Clipboard API for modern browsers
+        if (navigator.clipboard && navigator.clipboard.write) {
+            try {
+                // Create a Blob with the HTML content
+                const htmlBlob = new Blob([html], { type: 'text/html' });
+
+                // Create a ClipboardItem with the Blob
+                const clipboardItem = new ClipboardItem({ 'text/html': htmlBlob });
+
+                // Write the ClipboardItem to the clipboard
+                await navigator.clipboard.write([clipboardItem]);
+                return true;
+            } catch (err) {
+                console.error('Failed to copy HTML to clipboard:', err);
+                return false;
+            }
+        } else {
+            // Fallback for older browsers
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            document.body.appendChild(tempDiv);
+            const range = document.createRange();
+            range.selectNode(tempDiv);
+            window.getSelection().addRange(range);
+            try {
+                document.execCommand('copy');
+                return true;
+            } catch (err) {
+                console.error('Failed to copy HTML to clipboard:', err);
+                return false;
+            } finally {
+                document.body.removeChild(tempDiv);
+            }
+        }
+    }
+
+    async function cleanHtml(targetElement = document.documentElement) {
+        // Create a clone to avoid modifying the live DOM
+        const clonedElement = targetElement.cloneNode(true);
+
+        // Function to find and remove all comment nodes
+        function removeCommentNodes(root) {
+            (function removeComments(node) {
+                for (let i = node.childNodes.length - 1; i >= 0; i--) {
+                    const child = node.childNodes[i];
+                    if (child.nodeType === Node.COMMENT_NODE) {
+                        node.removeChild(child);
+                    } else {
+                        removeComments(child);
+                    }
+                }
+            })(root); // 或 document.documentElement
+        }
+
+        // Function to remove unwanted elements and clean attributes on ALL elements
+        function cleanElements(root) {
+            const walker = document.createTreeWalker(
+                root,
+                NodeFilter.SHOW_ELEMENT,
+                null,
+                false
+            );
+
+            const elementsToProcess = [root];
+            let currentNode;
+
+            while (currentNode = walker.nextNode()) {
+                elementsToProcess.push(currentNode);
+            }
+
+            for (let i = elementsToProcess.length - 1; i >= 0; i--) {
+                const element = elementsToProcess[i];
+                const tagName = element.tagName.toLowerCase();
+
+                if (['script', 'style', 'link', 'meta', 'aside'].includes(tagName) ||
+                    element.id === 'immersive-translate-browser-popup') {
+                    if (element.parentNode) {
+                        element.parentNode.removeChild(element);
+                    }
+                    continue;
+                }
+
+                const attributesToRemove = [];
+                for (const attr of element.attributes) {
+                    if (attr.name.startsWith('data-') || attr.name === 'style') {
+                        attributesToRemove.push(attr.name);
+                    }
+                }
+                attributesToRemove.forEach(attrName => element.removeAttribute(attrName));
+
+                // Remove Tailwind CSS utility classes using patterns instead of hard-coded names
+                if (element.hasAttribute('class')) {
+                    // Matches variant prefixes like sm:, md:, hover:, dark:, etc.
+                    const variantRE = /^(?:sm|md|lg|xl|2xl|hover|focus|active|disabled|visited|first|last|odd|even|dark|group|peer):+/;
+
+                    // Matches core Tailwind utility prefixes
+                    const utilityRE = new RegExp(
+                        '^(?:' +
+                        [
+                            '-?m[trblxy]?', '-?p[trblxy]?',
+                            'w', 'h', 'min-w', 'max-w', 'min-h', 'max-h',
+                            'inset', 'inset-[xy]', 'top', 'bottom', 'left', 'right', 'start', 'end',
+                            'flex', 'grid', 'col', 'row', 'gap', 'space',
+                            'items', 'content', 'justify', 'self', 'place',
+                            'order', 'basis', 'grow', 'shrink',
+                            'text', 'font', 'leading', 'tracking', 'list', 'placeholder',
+                            'bg', 'border', 'rounded', 'shadow', 'ring',
+                            'object', 'overflow', 'z', 'opacity',
+                            'transition', 'duration', 'delay', 'ease', 'animate',
+                            'scale', 'rotate', 'translate', 'skew', 'origin',
+                            'cursor', 'select', 'align', 'divide', 'outline', 'decoration', 'stroke', 'fill', 'fixed'
+                        ].join('|') +
+                        ')-?'
+                    );
+
+                    const filtered = Array.from(element.classList).filter(cls => {
+                        let base = cls;
+                        // Strip any variant prefixes (e.g., sm:hover:)
+                        while (variantRE.test(base)) base = base.replace(variantRE, '');
+                        // Keep the class only if it is NOT a Tailwind utility and NOT starting with '-'
+                        return !utilityRE.test(base) && !base.startsWith('-') && !base.startsWith('[') && !base.indexOf(':') === -1;
+                    });
+
+                    if (filtered.length) {
+                        element.className = filtered.join(' ');
+                    } else {
+                        element.removeAttribute('class');
+                    }
+                }
+            }
+        }
+
+        function removeEmptyElements(root) {
+            const walker = document.createTreeWalker(
+                root,
+                NodeFilter.SHOW_ELEMENT,
+                null,
+                false
+            );
+            const elements = [root];
+            let node;
+            while (node = walker.nextNode()) {
+                elements.push(node);
+            }
+            let removed = false;
+            for (let i = elements.length - 1; i >= 0; i--) {
+                const el = elements[i];
+                if (['br', 'img', 'input', 'hr', 'meta', 'link'].includes(el.tagName.toLowerCase())) continue;
+                if (el.childElementCount === 0 && el.textContent.trim() === '') {
+                    if (el.parentNode) {
+                        el.parentNode.removeChild(el);
+                        removed = true;
+                    }
+                }
+            }
+            return removed;
+        }
+
+        function organizeNotebookLMSpecificLayout(root) {
+            const elements = root.querySelectorAll('labs-tailwind-structural-element-view-v2');
+
+            for (const element of elements) {
+                // Change child divs to spans
+                const childDivs = element.querySelectorAll(':scope > div');
+                for (let i = 0; i < childDivs.length; i++) {
+                    const div = childDivs[i];
+                    const span = document.createElement('span');
+                    // Copy attributes
+                    for (const attr of div.attributes) {
+                        span.setAttribute(attr.name, attr.value);
+                    }
+
+                    // console.debug('div:', div, 'textContent:', div.textContent, 'childNodes:', div.childNodes);
+
+                    // 如果是第一個 div 且只包含 '◦' (這個不是中文的句點喔)，則加一個空白
+                    if (i === 0 && div.textContent.trim() === '◦' && div.childNodes.length === 1 && div.firstChild.nodeType === Node.TEXT_NODE) {
+                        span.textContent = '◦ ';
+                    } else {
+                        // Append child nodes
+                        while (div.firstChild) {
+                            span.appendChild(div.firstChild);
+                        }
+                    }
+                    div.replaceWith(span);
+                }
+
+                // Change labs-tailwind-structural-element-view-v2 to div
+                const div = document.createElement('div');
+                // Copy attributes
+                for (const attr of element.attributes) {
+                    div.setAttribute(attr.name, attr.value);
+                }
+                // Append child nodes
+                while (element.firstChild) {
+                    div.appendChild(element.firstChild);
+                }
+                element.replaceWith(div);
+            }
+
+            const data = { success: true };
+        }
+
+        removeCommentNodes(clonedElement);
+        organizeNotebookLMSpecificLayout(clonedElement);
+        cleanElements(clonedElement);
+
+        // Recursively remove empty elements until no more are found
+        while (removeEmptyElements(clonedElement)) { }
+
+        return clonedElement;
     }
 
 })();
