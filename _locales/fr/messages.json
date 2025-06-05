@@ -1,0 +1,17 @@
+{
+    "tool_name": {
+        "message": "Boîte à Outils NotebookLM"
+    },
+    "tool_description": {
+        "message": "Améliorez votre expérience web NotebookLM avec des raccourcis clavier, des boutons améliorés et un accès rapide à NotebookLM."
+    },
+    "tool_author": {
+        "message": "Will Huang"
+    },
+    "copy_content": {
+        "message": "Copier le contenu"
+    },
+    "copy_mindmap_content": {
+        "message": "Copier le contenu de la carte mentale"
+    }
+}

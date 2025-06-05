@@ -3,9 +3,15 @@
         "message": "NotebookLM 万能工具箱"
     },
     "tool_description": {
-        "message": "提升 NotebookLM 网站的使用体验，提供快捷键、增强按钮与快速开启 NotebookLM 网站的按钮。"
+        "message": "提升 NotebookLM 网站的使用体验，提供快捷键、增强按钮与快速打开 NotebookLM 网站的按钮。"
     },
     "tool_author": {
         "message": "Will 保哥"
+    },
+    "copy_content": {
+        "message": "复制内容"
+    },
+    "copy_mindmap_content": {
+        "message": "复制思维导图内容"
     }
 }

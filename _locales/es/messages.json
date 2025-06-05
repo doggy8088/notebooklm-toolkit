@@ -1,0 +1,17 @@
+{
+    "tool_name": {
+        "message": "Kit de Herramientas NotebookLM"
+    },
+    "tool_description": {
+        "message": "Mejora tu experiencia web de NotebookLM con atajos de teclado, botones mejorados y acceso rápido a NotebookLM."
+    },
+    "tool_author": {
+        "message": "Will Huang"
+    },
+    "copy_content": {
+        "message": "Copiar contenido"
+    },
+    "copy_mindmap_content": {
+        "message": "Copiar contenido del mapa mental"
+    }
+}

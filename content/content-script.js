@@ -50,7 +50,7 @@
                 const matIcon = document.createElement('mat-icon');
                 matIcon.className = 'mat-icon notranslate material-symbols-outlined google-symbols mat-icon-no-color';
                 matIcon.textContent = 'content_copy';
-                matIcon.title = '複製內容';
+                matIcon.title = chrome.i18n.getMessage('copy_content');
                 copyBtn.appendChild(matIcon);
 
                 // 點擊複製
@@ -179,21 +179,42 @@
                 clonedButton.addEventListener('click', async (event) => {
                     event.preventDefault();
                     const markdownOutput = convertMindmapToMarkdown(svgElement.outerHTML);
-                    const blob = new Blob([markdownOutput], { type: 'text/markdown' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'mindmap.md';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        try {
+                            await navigator.clipboard.writeText(markdownOutput);
+                        } catch (err) {
+                            console.error('寫入剪貼簿失敗:', err);
+                        }
+                    } else {
+                        const textarea = document.createElement('textarea');
+                        textarea.value = markdownOutput;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        try {
+                            document.execCommand('copy');
+                        } catch (err) {
+                            console.error('寫入剪貼簿失敗:', err);
+                        }
+                        document.body.removeChild(textarea);
+                    }
+
+                    // const blob = new Blob([markdownOutput], { type: 'text/markdown' });
+                    // const url = URL.createObjectURL(blob);
+                    // const a = document.createElement('a');
+                    // a.href = url;
+                    // a.download = 'mindmap.md';
+                    // document.body.appendChild(a);
+                    // a.click();
+                    // document.body.removeChild(a);
+                    // URL.revokeObjectURL(url);
                 });
 
                 const matIconElement = clonedButton.querySelector('mat-icon');
                 if (matIconElement) {
-                    matIconElement.textContent = 'sim_card_download';
-                    matIconElement.title = 'Download Markdown';
+                    // https://marella.github.io/material-icons/demo/
+                    matIconElement.textContent = 'content_copy';
+                    matIconElement.title = chrome.i18n.getMessage('copy_mindmap_content');
                     data = {
                         success: true,
                         message: 'Button cloned and inserted successfully, mat-icon text updated.'
@@ -511,57 +532,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // async function InsertCopyNoteHTMLButton(panelFooterDiv) {
-    //     const buttons = panelFooterDiv.querySelectorAll('button');
-    //     if (buttons.length == 1) {
-    //         const convertButton = buttons[0]; // 轉換成來源 Button
-    //         const clonedButton = convertButton.cloneNode(true);
-
-    //         clonedButton.addEventListener('click', async (event) => {
-    //             event.preventDefault();
-    //             await copyNodeToClipboard();
-    //         });
-
-    //         clonedButton.setAttribute('data-copy-note-html-btn', 'true');
-
-    //         const matIconElement = clonedButton.querySelector('mat-icon');
-    //         if (matIconElement) {
-    //             matIconElement.textContent = 'content_copy';
-    //             matIconElement.title = 'Copy Note HTML';
-    //             data = {
-    //                 success: true,
-    //                 message: 'Button cloned and inserted successfully, mat-icon text updated.'
-    //             };
-    //         }
-
-    //         clonedButton.querySelector('span.mdc-button__label')?.textContent = '複製內容';
-
-    //         if (data.success) {
-    //             panelFooterDiv.insertBefore(clonedButton, convertButton);
-    //         }
-
-    //     } else {
-    //         data = {
-    //             success: false,
-    //             message: 'Less than two buttons found within .mindmap-actions.'
-    //         };
-    //     }
-    // }
 
     function handleCtrlAltB() {
         // const divPanelFooter = findPanelFooter();

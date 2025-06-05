@@ -7,5 +7,11 @@
     },
     "tool_author": {
         "message": "Will 保哥"
+    },
+    "copy_content": {
+        "message": "複製內容"
+    },
+    "copy_mindmap_content": {
+        "message": "複製心智圖內容"
     }
 }
