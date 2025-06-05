@@ -1,11 +1,17 @@
 {
-  "tool_name": {
-    "message": "NotebookLM Toolkit"
-  },
-  "tool_description": {
-    "message": "Enhance your NotebookLM web experience with keyboard shortcuts, enhanced buttons, and quick access to NotebookLM."
-  },
-  "tool_author": {
-    "message": "Will Huang"
-  }
+    "tool_name": {
+        "message": "NotebookLM Toolkit"
+    },
+    "tool_description": {
+        "message": "Enhance your NotebookLM web experience with keyboard shortcuts, enhanced buttons, and quick access to NotebookLM."
+    },
+    "tool_author": {
+        "message": "Will Huang"
+    },
+    "copy_content": {
+        "message": "Copy Content"
+    },
+    "copy_mindmap_content": {
+        "message": "Copy Mindmap Content"
+    }
 }

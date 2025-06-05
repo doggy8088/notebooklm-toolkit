@@ -1,11 +1,17 @@
 {
-  "tool_name": {
-    "message": "NotebookLM ツールキット"
-  },
-  "tool_description": {
-    "message": "キーボードショートカット、拡張ボタン、NotebookLMへの素早いアクセスでNotebookLMの使用体験を向上させます。"
-  },
-  "tool_author": {
-    "message": "Will Huang"
-  }
+    "tool_name": {
+        "message": "NotebookLM ツールキット"
+    },
+    "tool_description": {
+        "message": "キーボードショートカット、拡張ボタン、NotebookLMへの素早いアクセスでNotebookLMの使用体験を向上させます。"
+    },
+    "tool_author": {
+        "message": "Will Huang"
+    },
+    "copy_content": {
+        "message": "内容をコピー"
+    },
+    "copy_mindmap_content": {
+        "message": "マインドマップの内容をコピー"
+    }
 }

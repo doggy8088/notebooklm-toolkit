@@ -1,11 +1,17 @@
 {
-  "tool_name": {
-    "message": "NotebookLM 툴킷"
-  },
-  "tool_description": {
-    "message": "키보드 단축키, 향상된 버튼, NotebookLM 빠른 접근으로 NotebookLM 웹사이트 사용 경험을 향상시킵니다."
-  },
-  "tool_author": {
-    "message": "Will Huang"
-  }
+    "tool_name": {
+        "message": "NotebookLM 툴킷"
+    },
+    "tool_description": {
+        "message": "키보드 단축키, 향상된 버튼 및 NotebookLM에 대한 빠른 액세스로 NotebookLM 웹 경험을 향상시킵니다."
+    },
+    "tool_author": {
+        "message": "Will Huang"
+    },
+    "copy_content": {
+        "message": "내용 복사"
+    },
+    "copy_mindmap_content": {
+        "message": "마인드맵 내용 복사"
+    }
 }

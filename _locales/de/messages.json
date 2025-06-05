@@ -1,0 +1,17 @@
+{
+    "tool_name": {
+        "message": "NotebookLM Toolkit"
+    },
+    "tool_description": {
+        "message": "Verbessern Sie Ihr NotebookLM-Web-Erlebnis mit Tastenkombinationen, erweiterten Schaltflächen und schnellem Zugriff auf NotebookLM."
+    },
+    "tool_author": {
+        "message": "Will Huang"
+    },
+    "copy_content": {
+        "message": "Inhalt kopieren"
+    },
+    "copy_mindmap_content": {
+        "message": "Mindmap-Inhalt kopieren"
+    }
+}
