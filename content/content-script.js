@@ -7,8 +7,8 @@
     ];
 
     let clonedButton = null;
-    async function OpenAllButton() {
-        const result = await InsertOpenAllButton();
+    async function ToggleAllNodesButton() {
+        const result = await InsertToggleAllNodesButton();
         if (result.success) {
             const zoomActionsDiv = document.querySelector('div.zoom-actions');
             if (zoomActionsDiv) {
@@ -21,7 +21,7 @@
         const svg = findMindMapSvg();
         if (svg) {
             if (!clonedButton || !document.body.contains(clonedButton)) {
-                await OpenAllButton();
+                await ToggleAllNodesButton();
                 await insertDownloadMarkdownButton(svg);
             }
         }
@@ -37,8 +37,8 @@
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'copy-note-html-btn mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger note-editor-delete-button note-editor-delete-button-3panel mat-primary cdk-focused cdk-mouse-focused';
                 copyBtn.style.position = 'absolute';
-                copyBtn.style.top = '8px';
-                copyBtn.style.right = '8px';
+                copyBtn.style.top = '0px';
+                copyBtn.style.right = '0px';
                 copyBtn.style.zIndex = '10';
                 copyBtn.style.display = '';
                 copyBtn.style.background = 'transparent';
@@ -94,12 +94,13 @@
                 });
 
                 // 插入按鈕
+                editor.style.paddingRight = '40px';
                 editor.appendChild(copyBtn);
             }
         }
     }, 1000);
 
-    async function InsertOpenAllButton() {
+    async function InsertToggleAllNodesButton() {
         const zoomActionsDiv = document.querySelector('div.zoom-actions');
         if (zoomActionsDiv) {
             const buttons = zoomActionsDiv.querySelectorAll('button');

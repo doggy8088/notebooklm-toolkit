@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.6.0 (2025/6/6)
+
+  - Fine-tune "Copy Note" button position
+
 - 0.5.0 (2025/6/5)
 
   - Add HTML to Markdown feature.
