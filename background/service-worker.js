@@ -5,11 +5,23 @@ chrome.action.onClicked.addListener((tab) => {
 });
 
 chrome.runtime.onInstalled.addListener(() => {
+  // Create context menu
+  chrome.contextMenus.create({
+    id: "openCustomPrompts",
+    title: chrome.i18n.getMessage("query_custom_prompts"),
+    contexts: ["action"]
+  });
 
   chrome.notifications.onClicked.addListener(function (notificationId) {
     chrome.tabs.create({ url: DEFAULT_URL });
   });
+});
 
+// Handle context menu clicks
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "openCustomPrompts") {
+    chrome.sidePanel.open({ tabId: tab.id });
+  }
 });
 
 function showNotification(message, url) {

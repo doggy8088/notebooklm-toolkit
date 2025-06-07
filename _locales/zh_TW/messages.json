@@ -13,5 +13,8 @@
     },
     "copy_mindmap_content": {
         "message": "複製心智圖內容"
+    },
+    "query_custom_prompts": {
+        "message": "查詢自訂提示"
     }
 }

@@ -26,6 +26,9 @@
             }
         }
 
+        // Check for custom voice summary dialog and add event listener
+        monitorCustomVoiceSummaryDialog();
+
         const divPanelFooter = findPanelFooter();
         if (divPanelFooter) {
             const editor = divPanelFooter.previousElementSibling?.querySelector('markdown-editor-legacy') ||
@@ -792,6 +795,65 @@
         while (removeEmptyElements(clonedElement)) { }
 
         return clonedElement;
+    }
+
+    // Track if we've already added listener to avoid duplicates
+    let generateButtonListenerAdded = false;
+
+    function monitorCustomVoiceSummaryDialog() {
+        // Look for the custom voice summary dialog
+        const generateButton = document.querySelector('button.generate-button');
+        const episodeFocusTextarea = document.querySelector('textarea[formcontrolname="episodeFocus"]');
+        
+        if (generateButton && episodeFocusTextarea && !generateButtonListenerAdded) {
+            // Add click listener to the generate button
+            generateButton.addEventListener('click', async function(event) {
+                const promptContent = episodeFocusTextarea.value.trim();
+                
+                if (promptContent) {
+                    await saveCustomPrompt(promptContent);
+                }
+            });
+            
+            generateButtonListenerAdded = true;
+            console.log('Custom voice summary dialog listener added');
+        }
+        
+        // Reset flag if dialog is no longer present
+        if (!generateButton || !episodeFocusTextarea) {
+            generateButtonListenerAdded = false;
+        }
+    }
+
+    async function saveCustomPrompt(content) {
+        try {
+            // Get existing prompts from storage
+            const result = await chrome.storage.local.get(['customPrompts']);
+            const prompts = result.customPrompts || [];
+            
+            // Create new prompt object
+            const newPrompt = {
+                content: content,
+                timestamp: Date.now()
+            };
+            
+            // Check if the same prompt already exists (avoid duplicates)
+            const existingPrompt = prompts.find(p => p.content === content);
+            if (!existingPrompt) {
+                prompts.unshift(newPrompt); // Add to beginning of array
+                
+                // Keep only the most recent 50 prompts to avoid storage bloat
+                if (prompts.length > 50) {
+                    prompts.splice(50);
+                }
+                
+                // Save back to storage
+                await chrome.storage.local.set({ customPrompts: prompts });
+                console.log('Custom prompt saved:', content.substring(0, 50) + '...');
+            }
+        } catch (error) {
+            console.error('Error saving custom prompt:', error);
+        }
     }
 
 })();

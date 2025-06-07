@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自訂提示記錄</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-gray-50 h-full">
+    <div class="p-4">
+        <h1 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <span class="material-icons mr-2 text-blue-600">audio_magic_eraser</span>
+            自訂提示記錄
+        </h1>
+        
+        <div id="prompts-container" class="space-y-3">
+            <!-- Prompts will be dynamically inserted here -->
+        </div>
+        
+        <div id="empty-state" class="text-center py-8 text-gray-500 hidden">
+            <span class="material-icons text-4xl mb-2 block text-gray-400">description</span>
+            <p>尚未記錄任何自訂提示</p>
+            <p class="text-sm mt-1">當您在 NotebookLM 中使用自訂語音摘要功能時，提示會自動保存在這裡</p>
+        </div>
+    </div>
+    
+    <script src="sidepanel.js"></script>
+</body>
+</html>
