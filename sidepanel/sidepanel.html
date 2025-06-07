@@ -6,23 +6,40 @@
     <title>自訂提示記錄</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .material-icons {
+            font-feature-settings: 'liga';
+        }
+    </style>
 </head>
-<body class="bg-gray-50 h-full">
-    <div class="p-4">
-        <h1 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-            <span class="material-icons mr-2 text-blue-600">audio_magic_eraser</span>
-            自訂提示記錄
-        </h1>
+<body class="bg-gray-50 min-h-screen">
+    <div class="p-4 max-w-full">
+        <header class="mb-6">
+            <h1 class="text-lg font-semibold text-gray-800 flex items-center">
+                <span class="material-icons mr-2 text-blue-600">audio_magic_eraser</span>
+                自訂提示記錄
+            </h1>
+            <p class="text-sm text-gray-600 mt-1">記錄您的自訂語音摘要提示</p>
+        </header>
         
-        <div id="prompts-container" class="space-y-3">
-            <!-- Prompts will be dynamically inserted here -->
-        </div>
-        
-        <div id="empty-state" class="text-center py-8 text-gray-500 hidden">
-            <span class="material-icons text-4xl mb-2 block text-gray-400">description</span>
-            <p>尚未記錄任何自訂提示</p>
-            <p class="text-sm mt-1">當您在 NotebookLM 中使用自訂語音摘要功能時，提示會自動保存在這裡</p>
-        </div>
+        <main>
+            <div id="prompts-container" class="space-y-3">
+                <!-- Prompts will be dynamically inserted here -->
+            </div>
+            
+            <div id="empty-state" class="text-center py-12 text-gray-500 hidden">
+                <span class="material-icons text-5xl mb-4 block text-gray-400">description</span>
+                <h2 class="text-lg font-medium mb-2 text-gray-700">尚未記錄任何自訂提示</h2>
+                <p class="text-sm max-w-xs mx-auto leading-relaxed">
+                    當您在 NotebookLM 中使用自訂語音摘要功能時，提示會自動保存在這裡
+                </p>
+            </div>
+        </main>
     </div>
     
     <script src="sidepanel.js"></script>

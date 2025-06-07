@@ -24,6 +24,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   }
 });
 
+// Handle messages from content scripts
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'showNotification') {
+    showNotification(message.message, 'error');
+  }
+});
+
 function showNotification(message, url) {
   chrome.notifications.create(url, {
     type: 'basic',

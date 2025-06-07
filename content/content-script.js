@@ -799,34 +799,60 @@
 
     // Track if we've already added listener to avoid duplicates
     let generateButtonListenerAdded = false;
+    let lastGenerateButton = null;
 
     function monitorCustomVoiceSummaryDialog() {
-        // Look for the custom voice summary dialog
-        const generateButton = document.querySelector('button.generate-button');
-        const episodeFocusTextarea = document.querySelector('textarea[formcontrolname="episodeFocus"]');
-        
-        if (generateButton && episodeFocusTextarea && !generateButtonListenerAdded) {
-            // Add click listener to the generate button
-            generateButton.addEventListener('click', async function(event) {
-                const promptContent = episodeFocusTextarea.value.trim();
-                
-                if (promptContent) {
-                    await saveCustomPrompt(promptContent);
-                }
-            });
+        try {
+            // Look for the custom voice summary dialog
+            // Primary selectors based on the provided DOM structure
+            const generateButton = document.querySelector('button.generate-button');
+            const episodeFocusTextarea = document.querySelector('textarea[formcontrolname="episodeFocus"]');
             
-            generateButtonListenerAdded = true;
-            console.log('Custom voice summary dialog listener added');
-        }
-        
-        // Reset flag if dialog is no longer present
-        if (!generateButton || !episodeFocusTextarea) {
-            generateButtonListenerAdded = false;
+            // Fallback selectors in case the structure is slightly different
+            const fallbackGenerateButton = !generateButton ? 
+                document.querySelector('mat-dialog-actions button[color="primary"]') : null;
+            const fallbackTextarea = !episodeFocusTextarea ? 
+                document.querySelector('textarea.episode-focus-input') : null;
+            
+            const finalGenerateButton = generateButton || fallbackGenerateButton;
+            const finalTextarea = episodeFocusTextarea || fallbackTextarea;
+            
+            // Check if this is a new button (different from the last one we saw)
+            const isNewButton = finalGenerateButton && finalGenerateButton !== lastGenerateButton;
+            
+            if (finalGenerateButton && finalTextarea && (!generateButtonListenerAdded || isNewButton)) {
+                // Add click listener to the generate button
+                finalGenerateButton.addEventListener('click', async function(event) {
+                    try {
+                        const promptContent = finalTextarea.value.trim();
+                        
+                        if (promptContent) {
+                            await saveCustomPrompt(promptContent);
+                        }
+                    } catch (error) {
+                        console.error('Error handling generate button click:', error);
+                    }
+                });
+                
+                generateButtonListenerAdded = true;
+                lastGenerateButton = finalGenerateButton;
+                console.log('Custom voice summary dialog listener added');
+            }
+            
+            // Reset flag if dialog is no longer present
+            if (!finalGenerateButton || !finalTextarea) {
+                generateButtonListenerAdded = false;
+                lastGenerateButton = null;
+            }
+        } catch (error) {
+            console.error('Error monitoring custom voice summary dialog:', error);
         }
     }
 
     async function saveCustomPrompt(content) {
         try {
+            console.log('Attempting to save custom prompt:', content.substring(0, 50) + '...');
+            
             // Get existing prompts from storage
             const result = await chrome.storage.local.get(['customPrompts']);
             const prompts = result.customPrompts || [];
@@ -849,10 +875,22 @@
                 
                 // Save back to storage
                 await chrome.storage.local.set({ customPrompts: prompts });
-                console.log('Custom prompt saved:', content.substring(0, 50) + '...');
+                console.log('Custom prompt saved successfully. Total prompts:', prompts.length);
+            } else {
+                console.log('Prompt already exists, skipping duplicate save');
             }
         } catch (error) {
             console.error('Error saving custom prompt:', error);
+            // Optionally show a user-friendly notification
+            try {
+                chrome.runtime.sendMessage({
+                    type: 'showNotification',
+                    message: '保存自訂提示時發生錯誤'
+                });
+            } catch (msgError) {
+                // If messaging fails, that's okay - just log it
+                console.error('Failed to send error notification:', msgError);
+            }
         }
     }
 

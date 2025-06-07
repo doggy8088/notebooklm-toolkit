@@ -34,22 +34,33 @@ function createPromptHTML(prompt, index) {
         : prompt.content;
     
     return `
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 prompt-item" data-index="${index}">
-            <div class="flex justify-between items-start mb-2">
-                <div class="text-xs text-gray-500">${date}</div>
-                <button class="delete-btn text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-colors" 
-                        data-index="${index}" title="刪除此提示">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 prompt-item hover:shadow-md transition-shadow" data-index="${index}">
+            <div class="flex justify-between items-start mb-3">
+                <div class="text-xs text-gray-500 font-medium">${date}</div>
+                <button class="delete-btn text-gray-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors flex-shrink-0" 
+                        data-index="${index}" 
+                        title="刪除此提示"
+                        aria-label="刪除提示">
                     <span class="material-icons text-sm">delete</span>
                 </button>
             </div>
-            <div class="text-sm text-gray-800 leading-relaxed mb-2">${truncatedContent.replace(/\n/g, '<br>')}</div>
+            <div class="text-sm text-gray-800 leading-relaxed mb-3 whitespace-pre-wrap break-words">${escapeHtml(truncatedContent)}</div>
             ${prompt.content.length > 100 ? `
-                <button class="expand-btn text-blue-600 hover:text-blue-800 text-xs font-medium" data-index="${index}">
+                <button class="expand-btn text-blue-600 hover:text-blue-800 text-xs font-medium underline" 
+                        data-index="${index}"
+                        aria-label="顯示完整內容">
                     顯示完整內容
                 </button>
             ` : ''}
         </div>
     `;
+}
+
+// Helper function to escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // Event delegation for delete buttons and expand buttons
@@ -90,14 +101,16 @@ async function expandPrompt(index) {
             const expandBtn = promptElement.querySelector('.expand-btn');
             
             if (expandBtn.textContent.includes('顯示完整內容')) {
-                contentDiv.innerHTML = prompt.content.replace(/\n/g, '<br>');
+                contentDiv.innerHTML = escapeHtml(prompt.content);
                 expandBtn.textContent = '收起內容';
+                expandBtn.setAttribute('aria-label', '收起內容');
             } else {
                 const truncatedContent = prompt.content.length > 100 
                     ? prompt.content.substring(0, 100) + '...' 
                     : prompt.content;
-                contentDiv.innerHTML = truncatedContent.replace(/\n/g, '<br>');
+                contentDiv.innerHTML = escapeHtml(truncatedContent);
                 expandBtn.textContent = '顯示完整內容';
+                expandBtn.setAttribute('aria-label', '顯示完整內容');
             }
         }
     } catch (error) {
