@@ -1,29 +1,79 @@
 // sidepanel.js
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[DEBUG] Side panel DOM loaded');
     loadPrompts();
+    
+    // Add a refresh button for debugging
+    addDebugControls();
 });
+
+function addDebugControls() {
+    const container = document.body;
+    const debugDiv = document.createElement('div');
+    debugDiv.innerHTML = `
+        <div style="position: fixed; bottom: 10px; right: 10px; background: #f0f0f0; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 1000;">
+            <button id="refreshBtn" style="margin: 2px; padding: 5px 10px;">刷新</button>
+            <button id="clearBtn" style="margin: 2px; padding: 5px 10px;">清空</button>
+            <button id="testBtn" style="margin: 2px; padding: 5px 10px;">測試</button>
+        </div>
+    `;
+    container.appendChild(debugDiv);
+    
+    document.getElementById('refreshBtn').addEventListener('click', loadPrompts);
+    document.getElementById('clearBtn').addEventListener('click', clearAllPrompts);
+    document.getElementById('testBtn').addEventListener('click', addTestPrompt);
+}
+
+async function clearAllPrompts() {
+    if (confirm('確定要清空所有提示嗎？')) {
+        await chrome.storage.local.set({ customPrompts: [] });
+        await loadPrompts();
+    }
+}
+
+async function addTestPrompt() {
+    const testPrompt = {
+        content: `測試提示 - ${new Date().toLocaleString()}`,
+        timestamp: Date.now()
+    };
+    
+    const result = await chrome.storage.local.get(['customPrompts']);
+    const prompts = result.customPrompts || [];
+    prompts.unshift(testPrompt);
+    
+    await chrome.storage.local.set({ customPrompts: prompts });
+    await loadPrompts();
+}
 
 async function loadPrompts() {
     try {
+        console.log('[DEBUG] Loading prompts from storage...');
         const result = await chrome.storage.local.get(['customPrompts']);
         const prompts = result.customPrompts || [];
+        console.log('[DEBUG] Retrieved prompts:', prompts);
         
         const container = document.getElementById('prompts-container');
         const emptyState = document.getElementById('empty-state');
         
+        console.log('[DEBUG] Container element:', container);
+        console.log('[DEBUG] Empty state element:', emptyState);
+        
         if (prompts.length === 0) {
-            container.style.display = 'none';
-            emptyState.classList.remove('hidden');
+            console.log('[DEBUG] No prompts found, showing empty state');
+            if (container) container.style.display = 'none';
+            if (emptyState) emptyState.classList.remove('hidden');
         } else {
-            container.style.display = 'block';
-            emptyState.classList.add('hidden');
-            
-            container.innerHTML = prompts.map((prompt, index) => 
-                createPromptHTML(prompt, index)
-            ).join('');
+            console.log('[DEBUG] Found', prompts.length, 'prompts, displaying them');
+            if (container) {
+                container.style.display = 'block';
+                container.innerHTML = prompts.map((prompt, index) => 
+                    createPromptHTML(prompt, index)
+                ).join('');
+            }
+            if (emptyState) emptyState.classList.add('hidden');
         }
     } catch (error) {
-        console.error('Error loading prompts:', error);
+        console.error('[DEBUG] Error loading prompts:', error);
     }
 }
 
