@@ -1,0 +1,83 @@
+{
+    "tool_name": {
+        "message": "Toolkit NotebookLM"
+    },
+    "tool_description": {
+        "message": "Migliora la tua esperienza web NotebookLM con scorciatoie da tastiera, pulsanti migliorati e accesso rapido a NotebookLM."
+    },
+    "tool_author": {
+        "message": "Will Huang"
+    },
+    "copy_content": {
+        "message": "Copia Contenuto"
+    },
+    "copy_mindmap_content": {
+        "message": "Copia Contenuto Mappa Mentale"
+    },
+    "query_custom_prompts": {
+        "message": "Registri Prompt Personalizzati per Panoramica Audio"
+    },
+    "confirm_clear_all_prompts": {
+        "message": "Sei sicuro di voler cancellare tutti i prompt?"
+    },
+    "confirm_delete_prompt": {
+        "message": "Sei sicuro di voler eliminare questo prompt personalizzato?"
+    },
+    "custom_prompt_content": {
+        "message": "Contenuto Prompt Personalizzato"
+    },
+    "expand": {
+        "message": "Espandi"
+    },
+    "collapse": {
+        "message": "Comprimi"
+    },
+    "show_full_content": {
+        "message": "Mostra Contenuto Completo"
+    },
+    "hide_content": {
+        "message": "Nascondi Contenuto"
+    },
+    "delete_this_prompt": {
+        "message": "Elimina Questo Prompt"
+    },
+    "delete_prompt": {
+        "message": "Elimina Prompt"
+    },
+    "custom_audio_overview_prompt_records": {
+        "message": "Registri Prompt Panoramica Audio Personalizzati"
+    },
+    "refresh": {
+        "message": "Aggiorna"
+    },
+    "clear": {
+        "message": "Cancella"
+    },
+    "test": {
+        "message": "Test"
+    },
+    "no_custom_prompts_recorded": {
+        "message": "Nessun prompt personalizzato registrato ancora"
+    },
+    "custom_prompts_description": {
+        "message": "Quando utilizzi la funzione di panoramica audio personalizzata in NotebookLM, i prompt vengono salvati automaticamente qui, rendendo facile ricordare i tuoi prompt personalizzati passati."
+    },
+    "footer_copyright": {
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
+    },
+    "custom_prompt_saved": {
+        "message": "Prompt personalizzato salvato"
+    },
+    "prompts_count": {
+        "message": "Totale: {count}"
+    },
+    "error_saving_prompt": {
+        "message": "Errore nel salvare il prompt personalizzato:"
+    },
+    "clipboard_write_failed": {
+        "message": "Impossibile scrivere negli appunti:"
+    },
+    "view_manage_saved_prompts": {
+        "message": "Visualizza e gestisci tutti i tuoi prompt personalizzati salvati qui."
+    }
+}
