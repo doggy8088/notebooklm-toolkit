@@ -44,7 +44,7 @@
     "delete_prompt": {
         "message": "刪除提示"
     },
-    "custom_voice_summary_prompt_records": {
+    "custom_audio_overview_prompt_records": {
         "message": "語音摘要自訂提示記錄"
     },
     "refresh": {

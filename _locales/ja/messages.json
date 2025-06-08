@@ -44,7 +44,7 @@
     "delete_prompt": {
         "message": "プロンプトを削除"
     },
-    "custom_voice_summary_prompt_records": {
+    "custom_audio_overview_prompt_records": {
         "message": "カスタム音声要約プロンプト記録"
     },
     "refresh": {
@@ -65,16 +65,18 @@
     "footer_copyright": {
         "message": "NotebookLM Toolkit © 2025 Will Huang"
     },
-    "footer_description": {
-        "message": "NotebookLM 萬能工具箱"
-    },
     "custom_prompt_saved": {
         "message": "カスタムプロンプトが保存されました"
     },
     "prompts_count": {
         "message": "合計プロンプト数: {count}"
-    },
-    "error_saving_prompt": {
+    },    "error_saving_prompt": {
         "message": "プロンプトの保存エラー:"
+    },
+    "clipboard_write_failed": {
+        "message": "クリップボードへの書き込みに失敗しました:"
+    },
+    "view_manage_saved_prompts": {
+        "message": "保存されたすべてのカスタムプロンプトをここで表示・管理できます。"
     }
 }

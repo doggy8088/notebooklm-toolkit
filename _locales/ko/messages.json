@@ -44,7 +44,7 @@
     "delete_prompt": {
         "message": "프롬프트 삭제"
     },
-    "custom_voice_summary_prompt_records": {
+    "custom_audio_overview_prompt_records": {
         "message": "맞춤 음성 요약 프롬프트 기록"
     },
     "refresh": {
@@ -65,9 +65,6 @@
     "footer_copyright": {
         "message": "NotebookLM Toolkit © 2025 Will Huang"
     },
-    "footer_description": {
-        "message": "NotebookLM 만능 도구상자"
-    },
     "custom_prompt_saved": {
         "message": "맞춤 프롬프트가 저장되었습니다"
     },
@@ -76,5 +73,11 @@
     },
     "error_saving_prompt": {
         "message": "프롬프트 저장 오류:"
+    },
+    "clipboard_write_failed": {
+        "message": "클립보드 쓰기 실패:"
+    },
+    "view_manage_saved_prompts": {
+        "message": "저장된 모든 맞춤 프롬프트를 여기서 보고 관리하세요."
     }
 }

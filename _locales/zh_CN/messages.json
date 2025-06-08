@@ -44,7 +44,7 @@
     "delete_prompt": {
         "message": "删除提示"
     },
-    "custom_voice_summary_prompt_records": {
+    "custom_audio_overview_prompt_records": {
         "message": "自定义语音摘要提示记录"
     },
     "refresh": {
@@ -65,9 +65,6 @@
     "footer_copyright": {
         "message": "NotebookLM 万能工具箱 © 2025 Will 保哥"
     },
-    "footer_description": {
-        "message": "NotebookLM 万能工具箱"
-    },
     "custom_prompt_saved": {
         "message": "自定义提示已保存"
     },
@@ -76,5 +73,11 @@
     },
     "error_saving_prompt": {
         "message": "保存提示时出错:"
+    },
+    "clipboard_write_failed": {
+        "message": "写入剪贴板失败:"
+    },
+    "view_manage_saved_prompts": {
+        "message": "在此处查看和管理您所有已保存的自定义提示。"
     }
 }

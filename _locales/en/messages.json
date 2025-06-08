@@ -15,7 +15,7 @@
         "message": "Copy Mindmap Content"
     },
     "query_custom_prompts": {
-        "message": "Custom Prompt Records for Audio Summary"
+        "message": "Custom Prompt Records for Audio Overview"
     },
     "confirm_clear_all_prompts": {
         "message": "Are you sure you want to clear all prompts?"
@@ -44,8 +44,8 @@
     "delete_prompt": {
         "message": "Delete Prompt"
     },
-    "custom_voice_summary_prompt_records": {
-        "message": "Custom Voice Summary Prompt Records"
+    "custom_audio_overview_prompt_records": {
+        "message": "Custom Audio Overview Prompt Records"
     },
     "refresh": {
         "message": "Refresh"
@@ -60,7 +60,7 @@
         "message": "No custom prompts recorded yet"
     },
     "custom_prompts_description": {
-        "message": "When you use the custom voice summary feature in NotebookLM, prompts are automatically saved here, making it easy to remember your past custom prompts."
+        "message": "When you use the custom audio overview feature in NotebookLM, prompts are automatically saved here, making it easy to remember your past custom prompts."
     },
     "footer_copyright": {
         "message": "NotebookLM Toolkit © 2025 Will Huang"
