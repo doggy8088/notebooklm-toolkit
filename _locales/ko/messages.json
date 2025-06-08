@@ -63,7 +63,7 @@
         "message": "NotebookLM에서 맞춤 음성 요약 기능을 사용하면 프롬프트가 자동으로 여기에 저장되어 과거의 맞춤 프롬프트를 쉽게 기억할 수 있습니다."
     },
     "footer_copyright": {
-        "message": "© 2024 보조님"
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
     },
     "footer_description": {
         "message": "NotebookLM 만능 도구상자"

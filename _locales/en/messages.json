@@ -63,7 +63,7 @@
         "message": "When you use the custom voice summary feature in NotebookLM, prompts are automatically saved here, making it easy to remember your past custom prompts."
     },
     "footer_copyright": {
-        "message": "NotebookLM Toolkit © 2025"
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
     },
     "custom_prompt_saved": {
         "message": "Custom prompt saved"

@@ -63,7 +63,7 @@
         "message": "NotebookLMでカスタム音声要約機能を使用すると、プロンプトが自動的にここに保存され、過去のカスタムプロンプトを簡単に思い出すことができます。"
     },
     "footer_copyright": {
-        "message": "© 2024 保哥"
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
     },
     "footer_description": {
         "message": "NotebookLM 萬能工具箱"

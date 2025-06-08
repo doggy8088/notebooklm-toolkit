@@ -63,7 +63,7 @@
         "message": "當您在 NotebookLM 中使用自訂語音摘要功能時，提示會自動保存在這裡，讓您輕鬆記憶過往的自訂提示。"
     },
     "footer_copyright": {
-        "message": "NotebookLM 萬能工具箱 © 2025"
+        "message": "NotebookLM 萬能工具箱 © 2025 Will 保哥"
     },
     "custom_prompt_saved": {
         "message": "自訂提示已保存"

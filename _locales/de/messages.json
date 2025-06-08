@@ -1,6 +1,6 @@
 {
     "tool_name": {
-        "message": "NotebookLM Universelles Toolkit"
+        "message": "NotebookLM Werkzeugkasten"
     },
     "tool_description": {
         "message": "Verbessern Sie Ihr NotebookLM-Website-Erlebnis mit Tastenkombinationen, erweiterten Schaltflächen und einem Schnellzugriff-Button für NotebookLM."
@@ -63,7 +63,7 @@
         "message": "Wenn Sie die benutzerdefinierte Sprachzusammenfassungsfunktion in NotebookLM verwenden, werden Prompts automatisch hier gespeichert, damit Sie sich leicht an Ihre vergangenen benutzerdefinierten Prompts erinnern können."
     },
     "footer_copyright": {
-        "message": "© 2024 保哥"
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
     },
     "footer_description": {
         "message": "NotebookLM Universelles Toolkit"

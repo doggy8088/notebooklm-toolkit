@@ -1,6 +1,6 @@
 {
     "tool_name": {
-        "message": "Caja de Herramientas Universal de NotebookLM"
+        "message": "Caja de Herramientas NotebookLM"
     },
     "tool_description": {
         "message": "Mejora tu experiencia de uso del sitio web de NotebookLM, proporcionando atajos de teclado, botones mejorados y botón de acceso rápido a NotebookLM."
@@ -63,7 +63,7 @@
         "message": "Cuando utilice la función de resumen de voz personalizado en NotebookLM, las indicaciones se guardan automáticamente aquí, facilitando recordar sus indicaciones personalizadas pasadas."
     },
     "footer_copyright": {
-        "message": "© 2024 保哥"
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
     },
     "footer_description": {
         "message": "Caja de Herramientas Universal de NotebookLM"

@@ -1,6 +1,6 @@
 {
     "tool_name": {
-        "message": "Boîte à Outils Universelle NotebookLM"
+        "message": "Boîte à Outils NotebookLM"
     },
     "tool_description": {
         "message": "Améliorez votre expérience d'utilisation du site web NotebookLM, en fournissant des raccourcis clavier, des boutons améliorés et un bouton d'accès rapide à NotebookLM."
@@ -63,7 +63,7 @@
         "message": "Lorsque vous utilisez la fonction de résumé vocal personnalisé dans NotebookLM, les invites sont automatiquement sauvegardées ici, facilitant la mémorisation de vos invites personnalisées passées."
     },
     "footer_copyright": {
-        "message": "© 2024 保哥"
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
     },
     "footer_description": {
         "message": "Boîte à Outils Universelle NotebookLM"
