@@ -13,5 +13,71 @@
     },
     "copy_mindmap_content": {
         "message": "Copy Mindmap Content"
+    },
+    "query_custom_prompts": {
+        "message": "Custom Prompt Records for Audio Overview"
+    },
+    "confirm_clear_all_prompts": {
+        "message": "Are you sure you want to clear all prompts?"
+    },
+    "confirm_delete_prompt": {
+        "message": "Are you sure you want to delete this custom prompt?"
+    },
+    "custom_prompt_content": {
+        "message": "Custom Prompt Content"
+    },
+    "expand": {
+        "message": "Expand"
+    },
+    "collapse": {
+        "message": "Collapse"
+    },
+    "show_full_content": {
+        "message": "Show Full Content"
+    },
+    "hide_content": {
+        "message": "Hide Content"
+    },
+    "delete_this_prompt": {
+        "message": "Delete This Prompt"
+    },
+    "delete_prompt": {
+        "message": "Delete Prompt"
+    },
+    "custom_audio_overview_prompt_records": {
+        "message": "Custom Audio Overview Prompt Records"
+    },
+    "refresh": {
+        "message": "Refresh"
+    },
+    "clear": {
+        "message": "Clear"
+    },
+    "test": {
+        "message": "Test"
+    },
+    "no_custom_prompts_recorded": {
+        "message": "No custom prompts recorded yet"
+    },
+    "custom_prompts_description": {
+        "message": "When you use the custom audio overview feature in NotebookLM, prompts are automatically saved here, making it easy to remember your past custom prompts."
+    },
+    "footer_copyright": {
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
+    },
+    "custom_prompt_saved": {
+        "message": "Custom prompt saved"
+    },
+    "prompts_count": {
+        "message": "Total: {count}"
+    },
+    "error_saving_prompt": {
+        "message": "Error saving custom prompt:"
+    },
+    "clipboard_write_failed": {
+        "message": "Failed to write to clipboard:"
+    },
+    "view_manage_saved_prompts": {
+        "message": "View and manage all your saved custom prompts here."
     }
 }

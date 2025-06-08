@@ -1,0 +1,29 @@
+{
+  "name": "notebooklm-toolkit",
+  "version": "1.0.0",
+  "description": "提升 NotebookLM 網站的使用體驗，提供快速鍵、增強按鈕與快速開啟 NotebookLM 網站的按鈕。",
+  "main": "index.js",
+  "scripts": {
+    "build": "tailwindcss -i ./src/app.css -o ./assets/css/tailwind.css --minify",
+    "postinstall": "tailwindcss -i ./src/app.css -o ./assets/css/tailwind.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doggy8088/notebooklm-toolkit.git"
+  },
+  "keywords": [
+    "notebooklm"
+  ],
+  "author": "Will 保哥",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/doggy8088/notebooklm-toolkit/issues"
+  },
+  "homepage": "https://github.com/doggy8088/notebooklm-toolkit#readme",
+  "devDependencies": {
+    "postcss": "^8.5.4",
+    "tailwindcss": "^3.4.17",
+    "autoprefixer": "^10.4.21"
+  }
+}

@@ -1,5 +1,14 @@
 # Changelog
 
+- 0.7.0 (2025/1/8)
+
+  - Add Custom Voice Summary Prompt Preservation feature
+  - Automatically save custom prompts when using NotebookLM's custom voice summary
+  - Add side panel for managing saved prompts with view, expand, and delete functions
+  - Add context menu "Query Custom Prompts" option
+  - Prevent duplicate prompt saves and auto-manage recent 50 prompts
+  - Enhanced security with HTML escaping and comprehensive error handling
+
 - 0.6.0 (2025/6/6)
 
   - Fine-tune "Copy Note" button position

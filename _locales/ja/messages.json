@@ -13,5 +13,70 @@
     },
     "copy_mindmap_content": {
         "message": "マインドマップの内容をコピー"
+    },
+    "query_custom_prompts": {
+        "message": "音声要約のカスタムプロンプト記録"
+    },
+    "confirm_clear_all_prompts": {
+        "message": "すべてのプロンプトをクリアしてもよろしいですか？"
+    },
+    "confirm_delete_prompt": {
+        "message": "このカスタムプロンプトを削除してもよろしいですか？"
+    },
+    "custom_prompt_content": {
+        "message": "カスタムプロンプト内容"
+    },
+    "expand": {
+        "message": "展開"
+    },
+    "collapse": {
+        "message": "折りたたみ"
+    },
+    "show_full_content": {
+        "message": "全内容を表示"
+    },
+    "hide_content": {
+        "message": "内容を隠す"
+    },
+    "delete_this_prompt": {
+        "message": "このプロンプトを削除"
+    },
+    "delete_prompt": {
+        "message": "プロンプトを削除"
+    },
+    "custom_audio_overview_prompt_records": {
+        "message": "カスタム音声要約プロンプト記録"
+    },
+    "refresh": {
+        "message": "更新"
+    },
+    "clear": {
+        "message": "クリア"
+    },
+    "test": {
+        "message": "テスト"
+    },
+    "no_custom_prompts_recorded": {
+        "message": "カスタムプロンプトはまだ記録されていません"
+    },
+    "custom_prompts_description": {
+        "message": "NotebookLMでカスタム音声要約機能を使用すると、プロンプトが自動的にここに保存され、過去のカスタムプロンプトを簡単に思い出すことができます。"
+    },
+    "footer_copyright": {
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
+    },
+    "custom_prompt_saved": {
+        "message": "カスタムプロンプトが保存されました"
+    },
+    "prompts_count": {
+        "message": "合計プロンプト数: {count}"
+    },    "error_saving_prompt": {
+        "message": "プロンプトの保存エラー:"
+    },
+    "clipboard_write_failed": {
+        "message": "クリップボードへの書き込みに失敗しました:"
+    },
+    "view_manage_saved_prompts": {
+        "message": "保存されたすべてのカスタムプロンプトをここで表示・管理できます。"
     }
 }

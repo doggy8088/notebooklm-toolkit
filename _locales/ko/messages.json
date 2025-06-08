@@ -13,5 +13,71 @@
     },
     "copy_mindmap_content": {
         "message": "마인드맵 내용 복사"
+    },
+    "query_custom_prompts": {
+        "message": "음성 요약의 맞춤 프롬프트 기록"
+    },
+    "confirm_clear_all_prompts": {
+        "message": "모든 프롬프트를 지우시겠습니까？"
+    },
+    "confirm_delete_prompt": {
+        "message": "이 맞춤 프롬프트를 삭제하시겠습니까？"
+    },
+    "custom_prompt_content": {
+        "message": "맞춤 프롬프트 내용"
+    },
+    "expand": {
+        "message": "확장"
+    },
+    "collapse": {
+        "message": "접기"
+    },
+    "show_full_content": {
+        "message": "전체 내용 표시"
+    },
+    "hide_content": {
+        "message": "내용 숨기기"
+    },
+    "delete_this_prompt": {
+        "message": "이 프롬프트 삭제"
+    },
+    "delete_prompt": {
+        "message": "프롬프트 삭제"
+    },
+    "custom_audio_overview_prompt_records": {
+        "message": "맞춤 음성 요약 프롬프트 기록"
+    },
+    "refresh": {
+        "message": "새로고침"
+    },
+    "clear": {
+        "message": "지우기"
+    },
+    "test": {
+        "message": "테스트"
+    },
+    "no_custom_prompts_recorded": {
+        "message": "아직 맞춤 프롬프트가 기록되지 않았습니다"
+    },
+    "custom_prompts_description": {
+        "message": "NotebookLM에서 맞춤 음성 요약 기능을 사용하면 프롬프트가 자동으로 여기에 저장되어 과거의 맞춤 프롬프트를 쉽게 기억할 수 있습니다."
+    },
+    "footer_copyright": {
+        "message": "NotebookLM Toolkit © 2025 Will Huang"
+    },
+    "custom_prompt_saved": {
+        "message": "맞춤 프롬프트가 저장되었습니다"
+    },
+    "prompts_count": {
+        "message": "총 프롬프트 수: {count}"
+    },
+    "error_saving_prompt": {
+        "message": "프롬프트 저장 오류:"
+    },
+    "clipboard_write_failed": {
+        "message": "클립보드 쓰기 실패:"
+    },
+    "view_manage_saved_prompts": {
+        "message": "저장된 모든 맞춤 프롬프트를 여기서 보고 관리하세요."
     }
 }

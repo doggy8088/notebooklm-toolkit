@@ -13,5 +13,71 @@
     },
     "copy_mindmap_content": {
         "message": "複製心智圖內容"
+    },
+    "query_custom_prompts": {
+        "message": "語音摘要的自訂提示記錄"
+    },
+    "confirm_clear_all_prompts": {
+        "message": "確定要清空所有提示嗎？"
+    },
+    "confirm_delete_prompt": {
+        "message": "確定要刪除這個自訂提示嗎？"
+    },
+    "custom_prompt_content": {
+        "message": "自訂提示內容"
+    },
+    "expand": {
+        "message": "展開"
+    },
+    "collapse": {
+        "message": "收起"
+    },
+    "show_full_content": {
+        "message": "顯示完整內容"
+    },
+    "hide_content": {
+        "message": "收起內容"
+    },
+    "delete_this_prompt": {
+        "message": "刪除此提示"
+    },
+    "delete_prompt": {
+        "message": "刪除提示"
+    },
+    "custom_audio_overview_prompt_records": {
+        "message": "語音摘要自訂提示記錄"
+    },
+    "refresh": {
+        "message": "重新整理"
+    },
+    "clear": {
+        "message": "清空"
+    },
+    "test": {
+        "message": "測試"
+    },
+    "no_custom_prompts_recorded": {
+        "message": "尚未記錄任何自訂提示"
+    },
+    "custom_prompts_description": {
+        "message": "當您在 NotebookLM 中使用自訂語音摘要功能時，提示會自動保存在這裡，讓您輕鬆記憶過往的自訂提示。"
+    },
+    "footer_copyright": {
+        "message": "NotebookLM 萬能工具箱 © 2025 Will 保哥"
+    },
+    "custom_prompt_saved": {
+        "message": "自訂提示已保存"
+    },
+    "prompts_count": {
+        "message": "共 {count} 個"
+    },
+    "error_saving_prompt": {
+        "message": "保存自訂提示時發生錯誤:"
+    },
+    "clipboard_write_failed": {
+        "message": "寫入剪貼簿失敗:"
+    },
+    "view_manage_saved_prompts": {
+        "message": "在此處查看和管理您所有已保存的自訂提示。"
     }
 }
