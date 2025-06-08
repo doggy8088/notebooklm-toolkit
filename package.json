@@ -4,8 +4,12 @@
   "description": "提升 NotebookLM 網站的使用體驗，提供快速鍵、增強按鈕與快速開啟 NotebookLM 網站的按鈕。",
   "main": "index.js",
   "scripts": {
-    "build": "tailwindcss -i ./src/app.css -o ./assets/css/tailwind.css --minify",
-    "postinstall": "tailwindcss -i ./src/app.css -o ./assets/css/tailwind.css --minify",
+    "postinstall": "cross-env BROWSERSLIST_IGNORE_OLD_DATA=1 npm run build",
+    "build": "npm run build-js && npm run build-css && npm run build-css-prod",
+    "build-js": "curl -sL https://cdn.tailwindcss.com/3.4.16 -o ./assets/js/tailwindcdn.min.js",
+    "build-css": "tailwindcss -i ./src/app.css -o ./assets/css/tailwind.css",
+    "build-css-prod": "tailwindcss -i ./src/app.css -o ./assets/css/tailwind.min.css --minify",
+    "build-css-watch": "tailwindcss -i ./src/app.css -o ./assets/css/tailwind.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +28,11 @@
   "devDependencies": {
     "postcss": "^8.5.4",
     "tailwindcss": "^3.4.17",
-    "autoprefixer": "^10.4.21"
+    "autoprefixer": "^10.4.21",
+    "cross-env": "^7.0.3"
+  },
+  "dependencies": {
+    "browserslist": "^4.25.0",
+    "caniuse-lite": "^1.0.30001721"
   }
 }
