@@ -1,47 +1,149 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自訂提示記錄</title>
+    <title>NotebookLM 自訂提示記錄</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        body { 
-            margin: 0; 
-            padding: 0; 
-            font-family: system-ui, -apple-system, sans-serif;
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         }
+
         .material-icons {
             font-feature-settings: 'liga';
         }
+
+        .prompt-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .prompt-card:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 表格樣式 */
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        table th:first-child {
+            border-top-left-radius: 0.75rem;
+        }
+
+        table th:last-child {
+            border-top-right-radius: 0.75rem;
+        }
+
+        /* 響應式表格 */
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                border: 1px solid #e5e7eb;
+                margin: 0.5rem 0;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                background: white;
+            }
+
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50% !important;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            td:before {
+                content: attr(data-label) ": ";
+                position: absolute;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: 600;
+                color: #374151;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="p-4 max-w-full">
-        <header class="mb-6">
-            <h1 class="text-lg font-semibold text-gray-800 flex items-center">
-                <span class="material-icons mr-2 text-blue-600">audio_magic_eraser</span>
-                自訂提示記錄
-            </h1>
-            <p class="text-sm text-gray-600 mt-1">記錄您的自訂語音摘要提示</p>
-        </header>
-        
-        <main>
-            <div id="prompts-container" class="space-y-3">
-                <!-- Prompts will be dynamically inserted here -->
+
+<body class="min-h-screen">
+    <!-- 主容器 -->
+    <div class="min-h-screen">
+        <!-- 頂部導航 -->
+        <div class="header-gradient text-white shadow-lg">
+            <div class="px-6 py-8 sm:px-8 lg:px-12">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <span class="material-icons text-2xl text-white">auto_awesome</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">語音摘要自訂提示記錄</h1>
+                        <p class="text-blue-100 text-sm sm:text-base mt-1 font-light">自動記錄您的語音摘要自訂提示</p>
+                    </div>
+                </div>
             </div>
-            
-            <div id="empty-state" class="text-center py-12 text-gray-500 hidden">
-                <span class="material-icons text-5xl mb-4 block text-gray-400">description</span>
-                <h2 class="text-lg font-medium mb-2 text-gray-700">尚未記錄任何自訂提示</h2>
-                <p class="text-sm max-w-xs mx-auto leading-relaxed">
-                    當您在 NotebookLM 中使用自訂語音摘要功能時，提示會自動保存在這裡
-                </p>
-            </div>
-        </main>
+        </div>
+        <!-- 主要內容區域 -->
+        <div class="px-8 py-8 sm:px-12 lg:px-16 max-w-6xl mx-auto">
+            <main>                <!-- 提示表格容器 -->
+                <div id="prompts-container" class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                    <!-- 表格會動態插入到這裡 -->
+                </div>
+                <!-- 空狀態 -->
+                <div id="empty-state" class="text-center py-16 lg:py-24 hidden">
+                    <div class="glass-effect rounded-2xl p-12 max-w-md mx-auto shadow-xl">
+                        <div
+                             class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span class="material-icons text-4xl text-white">lightbulb</span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-800">尚未記錄任何自訂提示</h2>
+                        <p class="text-gray-600 leading-relaxed max-w-sm mx-auto"> 當您在 NotebookLM
+                            中使用自訂語音摘要功能時，提示會自動保存在這裡，讓您輕鬆管理和重複使用。 </p>
+                        <div class="mt-8 flex items-center justify-center space-x-2 text-sm text-gray-500">
+                            <span class="material-icons text-base">info</span>
+                            <span>開始使用 NotebookLM 來建立第一個提示</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>        <!-- 底部留白 -->
+        <div class="h-16"></div>
     </div>
-    
     <script src="sidepanel.js"></script>
 </body>
+
 </html>
