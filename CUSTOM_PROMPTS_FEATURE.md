@@ -52,4 +52,4 @@
 
 ## 支援
 
-如有問題或建議，請在 GitHub 專案頁面提出 Issue。
+如有問題或建議，請在 GitHub 專案頁面提出 [Issue](https://github.com/doggy8088/notebooklm-toolkit/issues)。
