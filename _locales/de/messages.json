@@ -16,5 +16,65 @@
     },
     "query_custom_prompts": {
         "message": "Benutzerdefinierte Prompt-Aufzeichnungen für Sprachzusammenfassungen"
+    },
+    "confirm_clear_all_prompts": {
+        "message": "Sind Sie sicher, dass Sie alle Prompts löschen möchten？"
+    },
+    "confirm_delete_prompt": {
+        "message": "Sind Sie sicher, dass Sie diesen benutzerdefinierten Prompt löschen möchten？"
+    },
+    "custom_prompt_content": {
+        "message": "Benutzerdefinierter Prompt-Inhalt"
+    },
+    "expand": {
+        "message": "Erweitern"
+    },
+    "collapse": {
+        "message": "Einklappen"
+    },
+    "show_full_content": {
+        "message": "Vollständigen Inhalt anzeigen"
+    },
+    "hide_content": {
+        "message": "Inhalt verbergen"
+    },
+    "delete_this_prompt": {
+        "message": "Diesen Prompt löschen"
+    },
+    "delete_prompt": {
+        "message": "Prompt löschen"
+    },
+    "custom_voice_summary_prompt_records": {
+        "message": "Benutzerdefinierte Sprachzusammenfassung Prompt-Aufzeichnungen"
+    },
+    "refresh": {
+        "message": "Aktualisieren"
+    },
+    "clear": {
+        "message": "Löschen"
+    },
+    "test": {
+        "message": "Test"
+    },
+    "no_custom_prompts_recorded": {
+        "message": "Noch keine benutzerdefinierten Prompts aufgezeichnet"
+    },
+    "custom_prompts_description": {
+        "message": "Wenn Sie die benutzerdefinierte Sprachzusammenfassungsfunktion in NotebookLM verwenden, werden Prompts automatisch hier gespeichert, damit Sie sich leicht an Ihre vergangenen benutzerdefinierten Prompts erinnern können."
+    },
+    "footer_copyright": {
+        "message": "© 2024 保哥"
+    },
+    "footer_description": {
+        "message": "NotebookLM Universelles Toolkit"
+    },
+    "custom_prompt_saved": {
+        "message": "Benutzerdefinierter Prompt gespeichert"
+    },
+    "prompts_count": {
+        "message": "Gesamtzahl der Prompts: {count}"
+    },
+    "error_saving_prompt": {
+        "message": "Fehler beim Speichern des Prompts:"
     }
 }

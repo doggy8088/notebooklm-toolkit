@@ -16,5 +16,65 @@
     },
     "query_custom_prompts": {
         "message": "Enregistrements d'invites personnalisées pour résumé audio"
+    },
+    "confirm_clear_all_prompts": {
+        "message": "Êtes-vous sûr de vouloir effacer toutes les invites？"
+    },
+    "confirm_delete_prompt": {
+        "message": "Êtes-vous sûr de vouloir supprimer cette invite personnalisée？"
+    },
+    "custom_prompt_content": {
+        "message": "Contenu d'invite personnalisée"
+    },
+    "expand": {
+        "message": "Développer"
+    },
+    "collapse": {
+        "message": "Réduire"
+    },
+    "show_full_content": {
+        "message": "Afficher le contenu complet"
+    },
+    "hide_content": {
+        "message": "Masquer le contenu"
+    },
+    "delete_this_prompt": {
+        "message": "Supprimer cette invite"
+    },
+    "delete_prompt": {
+        "message": "Supprimer l'invite"
+    },
+    "custom_voice_summary_prompt_records": {
+        "message": "Enregistrements d'invites de résumé vocal personnalisé"
+    },
+    "refresh": {
+        "message": "Actualiser"
+    },
+    "clear": {
+        "message": "Effacer"
+    },
+    "test": {
+        "message": "Test"
+    },
+    "no_custom_prompts_recorded": {
+        "message": "Aucune invite personnalisée n'a encore été enregistrée"
+    },
+    "custom_prompts_description": {
+        "message": "Lorsque vous utilisez la fonction de résumé vocal personnalisé dans NotebookLM, les invites sont automatiquement sauvegardées ici, facilitant la mémorisation de vos invites personnalisées passées."
+    },
+    "footer_copyright": {
+        "message": "© 2024 保哥"
+    },
+    "footer_description": {
+        "message": "Boîte à Outils Universelle NotebookLM"
+    },
+    "custom_prompt_saved": {
+        "message": "Invite personnalisée sauvegardée"
+    },
+    "prompts_count": {
+        "message": "Nombre total d'invites: {count}"
+    },
+    "error_saving_prompt": {
+        "message": "Erreur lors de la sauvegarde de l'invite:"
     }
 }

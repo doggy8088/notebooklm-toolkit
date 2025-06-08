@@ -16,5 +16,65 @@
     },
     "query_custom_prompts": {
         "message": "Registros de indicaciones personalizadas para resumen de audio"
+    },
+    "confirm_clear_all_prompts": {
+        "message": "¿Está seguro de que desea borrar todas las indicaciones？"
+    },
+    "confirm_delete_prompt": {
+        "message": "¿Está seguro de que desea eliminar esta indicación personalizada？"
+    },
+    "custom_prompt_content": {
+        "message": "Contenido de indicación personalizada"
+    },
+    "expand": {
+        "message": "Expandir"
+    },
+    "collapse": {
+        "message": "Contraer"
+    },
+    "show_full_content": {
+        "message": "Mostrar contenido completo"
+    },
+    "hide_content": {
+        "message": "Ocultar contenido"
+    },
+    "delete_this_prompt": {
+        "message": "Eliminar esta indicación"
+    },
+    "delete_prompt": {
+        "message": "Eliminar indicación"
+    },
+    "custom_voice_summary_prompt_records": {
+        "message": "Registros de indicaciones de resumen de voz personalizado"
+    },
+    "refresh": {
+        "message": "Actualizar"
+    },
+    "clear": {
+        "message": "Limpiar"
+    },
+    "test": {
+        "message": "Prueba"
+    },
+    "no_custom_prompts_recorded": {
+        "message": "Aún no se han registrado indicaciones personalizadas"
+    },
+    "custom_prompts_description": {
+        "message": "Cuando utilice la función de resumen de voz personalizado en NotebookLM, las indicaciones se guardan automáticamente aquí, facilitando recordar sus indicaciones personalizadas pasadas."
+    },
+    "footer_copyright": {
+        "message": "© 2024 保哥"
+    },
+    "footer_description": {
+        "message": "Caja de Herramientas Universal de NotebookLM"
+    },
+    "custom_prompt_saved": {
+        "message": "Indicación personalizada guardada"
+    },
+    "prompts_count": {
+        "message": "Total de indicaciones: {count}"
+    },
+    "error_saving_prompt": {
+        "message": "Error al guardar la indicación:"
     }
 }

@@ -16,5 +16,65 @@
     },
     "query_custom_prompts": {
         "message": "语音摘要的自定义提示记录"
+    },
+    "confirm_clear_all_prompts": {
+        "message": "确定要清空所有提示吗？"
+    },
+    "confirm_delete_prompt": {
+        "message": "确定要删除这个自定义提示吗？"
+    },
+    "custom_prompt_content": {
+        "message": "自定义提示内容"
+    },
+    "expand": {
+        "message": "展开"
+    },
+    "collapse": {
+        "message": "收起"
+    },
+    "show_full_content": {
+        "message": "显示完整内容"
+    },
+    "hide_content": {
+        "message": "隐藏内容"
+    },
+    "delete_this_prompt": {
+        "message": "删除此提示"
+    },
+    "delete_prompt": {
+        "message": "删除提示"
+    },
+    "custom_voice_summary_prompt_records": {
+        "message": "自定义语音摘要提示记录"
+    },
+    "refresh": {
+        "message": "刷新"
+    },
+    "clear": {
+        "message": "清空"
+    },
+    "test": {
+        "message": "测试"
+    },
+    "no_custom_prompts_recorded": {
+        "message": "尚未记录任何自定义提示"
+    },
+    "custom_prompts_description": {
+        "message": "当您在 NotebookLM 中使用自定义语音摘要功能时，提示会自动保存在此处，方便您记住过去的自定义提示。"
+    },
+    "footer_copyright": {
+        "message": "© 2024 保哥"
+    },
+    "footer_description": {
+        "message": "NotebookLM 万能工具箱"
+    },
+    "custom_prompt_saved": {
+        "message": "自定义提示已保存"
+    },
+    "prompts_count": {
+        "message": "提示总数: {count}"
+    },
+    "error_saving_prompt": {
+        "message": "保存提示时出错:"
     }
 }
