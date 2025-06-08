@@ -3,28 +3,11 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('[DEBUG] Side panel DOM loaded');
     loadPrompts();
 
-    // Add a refresh button for debugging
-    addDebugControls();
-});
-
-function addDebugControls() {
-    const container = document.body;
-    const debugDiv = document.createElement('div');
-    debugDiv.innerHTML = `
-        <div class="fixed bottom-6 right-6 bg-white rounded-xl shadow-lg border border-gray-200 p-4 z-50 backdrop-blur-md bg-opacity-95">
-            <div class="flex space-x-2 text-xs">
-                <button id="refreshBtn" class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">刷新</button>
-                <button id="clearBtn" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium">清空</button>
-                <button id="testBtn" class="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium">測試</button>
-            </div>
-        </div>
-    `;
-    container.appendChild(debugDiv);
-
+    // 按鈕事件監聽器
     document.getElementById('refreshBtn').addEventListener('click', loadPrompts);
     document.getElementById('clearBtn').addEventListener('click', clearAllPrompts);
     document.getElementById('testBtn').addEventListener('click', addTestPrompt);
-}
+});
 
 async function clearAllPrompts() {
     if (confirm('確定要清空所有提示嗎？')) {
@@ -35,7 +18,8 @@ async function clearAllPrompts() {
 
 async function addTestPrompt() {
     const testPrompt = {
-        content: `測試提示 - ${new Date().toLocaleString()}`,
+        content: `節目名稱不要叫「深入探索」，節目名稱改為「保哥帶你聽」。
+節目內容應該詳細且具體，整場節目必須超過30分鐘。`,
         timestamp: Date.now()
     };
 
@@ -71,7 +55,7 @@ async function loadPrompts() {
             console.log('[DEBUG] Found', prompts.length, 'prompts, displaying them');
             if (container) {
                 container.style.display = 'block';
-                container.innerHTML = createPromptsTable(prompts);
+                container.innerHTML = createPromptsCards(prompts);
             } if (emptyState) {
                 emptyState.classList.add('hidden');
                 emptyState.style.display = 'none';
@@ -85,30 +69,15 @@ async function loadPrompts() {
     }
 }
 
-function createPromptsTable(prompts) {
-    const tableHeader = `
-        <table class="w-full">
-            <thead class="bg-gray-50 border-b border-gray-200">
-                <tr>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">日期時間</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">自訂提示內容</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-20">操作</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+function createPromptsCards(prompts) {
+    return `
+        <div class="space-y-6 p-2">
+            ${prompts.map((prompt, index) => createPromptCard(prompt, index)).join('')}
+        </div>
     `;
-
-    const tableRows = prompts.map((prompt, index) => createPromptRow(prompt, index)).join('');
-
-    const tableFooter = `
-            </tbody>
-        </table>
-    `;
-
-    return tableHeader + tableRows + tableFooter;
 }
 
-function createPromptRow(prompt, index) {
+function createPromptCard(prompt, index) {
     const date = new Date(prompt.timestamp).toLocaleString('zh-TW', {
         year: 'numeric',
         month: '2-digit',
@@ -120,33 +89,37 @@ function createPromptRow(prompt, index) {
     const truncatedContent = prompt.content.length > 150
         ? prompt.content.substring(0, 150) + '...'
         : prompt.content;    return `
-        <tr class="hover:bg-gray-50 transition-colors duration-200" data-index="${index}">
-            <td class="px-6 py-4 text-xs text-gray-500 font-medium" data-label="日期時間">
-                <div class="flex items-center space-x-1">
-                    <span class="material-icons text-blue-500 text-sm">schedule</span>
-                    <span class="whitespace-nowrap">${date}</span>
-                </div>
-            </td>
-            <td class="px-6 py-4" data-label="自訂提示內容">
-                <div class="text-sm font-bold text-gray-900 leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(truncatedContent)}</div>
-                ${prompt.content.length > 150 ? `
-                    <button class="expand-btn text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center space-x-1 mt-2 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-all duration-200"
-                            data-index="${index}"
-                            aria-label="顯示完整內容">
-                        <span class="material-icons text-xs">expand_more</span>
-                        <span>展開</span>
-                    </button>
-                ` : ''}
-            </td>
-            <td class="px-6 py-4" data-label="操作">
-                <button class="delete-btn text-gray-400 hover:text-red-500 p-1 rounded-full hover:bg-red-50 transition-all duration-200 group"
+        <div class="bg-white p-6 rounded-lg border border-gray-200 relative hover:shadow-md transition-shadow duration-200 prompt-card" data-index="${index}">
+            <!-- 刪除按鈕浮動在右上角 -->
+            <button class="delete-btn absolute top-3 right-3 text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all duration-200"
+                    data-index="${index}"
+                    title="刪除此提示"
+                    aria-label="刪除提示">
+                <span class="material-icons text-lg">delete_outline</span>
+            </button>
+
+            <!-- 日期標籤 -->
+            <div class="flex items-center space-x-2 mb-3">
+                <span class="material-icons text-blue-500 text-sm">schedule</span>
+                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${date}</span>
+            </div>
+
+            <!-- 內容標題 -->
+            <h3 class="text-lg font-semibold mb-2 pr-10">自訂提示內容</h3>
+
+            <!-- 提示內容 -->
+            <div class="prompt-content text-gray-600 whitespace-pre-wrap break-words leading-relaxed">${escapeHtml(truncatedContent)}</div>
+
+            <!-- 展開按鈕 -->
+            ${prompt.content.length > 150 ? `
+                <button class="expand-btn text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1 mt-3 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-all duration-200"
                         data-index="${index}"
-                        title="刪除此提示"
-                        aria-label="刪除提示">
-                    <span class="material-icons text-sm group-hover:scale-110 transition-transform">delete_outline</span>
+                        aria-label="顯示完整內容">
+                    <span class="material-icons text-sm">expand_more</span>
+                    <span>展開</span>
                 </button>
-            </td>
-        </tr>
+            ` : ''}
+        </div>
     `;
 }
 
@@ -220,9 +193,9 @@ async function expandPrompt(index) {
     try {
         const result = await chrome.storage.local.get(['customPrompts']);
         const prompts = result.customPrompts || [];
-        const prompt = prompts[index];        if (prompt) {
-            const promptElement = document.querySelector(`tr[data-index="${index}"]`);
-            const contentDiv = promptElement.querySelector('.text-sm.font-bold');
+        const prompt = prompts[index]; if (prompt) {
+            const promptElement = document.querySelector(`div[data-index="${index}"]`);
+            const contentDiv = promptElement.querySelector('.prompt-content');
             const expandBtn = promptElement.querySelector('.expand-btn');
             const expandIcon = expandBtn.querySelector('.material-icons');
             const expandText = expandBtn.querySelector('span:last-child');

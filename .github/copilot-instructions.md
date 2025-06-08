@@ -179,3 +179,16 @@ chrome.action.onClicked.addListener (async (tab) => {
 
 範例提示：
 "建立一個 Manifest V3 Chrome 擴充功能，用於在網頁上高亮顯示文字，需要內容腳本和彈出視窗介面"
+
+## 設計原則
+
+- 盡量不要撰寫自訂的 CSS 樣式，使用 Tailwin CSS 為主，減少維護 CSS 的負擔
+- 簡潔明瞭的 UI 設計，直觀的使用者體驗，採用 RWD 流式設計
+- 支援多語系
+- 易於維護和擴展
+- 遵循 Web 標準和最佳實踐
+- 確保跨瀏覽器相容性
+
+## Shell Environment
+
+PowerShell 7.5.0
