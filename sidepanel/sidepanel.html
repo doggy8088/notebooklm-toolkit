@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotebookLM 語音摘要的自訂提示記錄</title>
+    <title id="page-title">NotebookLM 語音摘要的自訂提示記錄</title>
     <script src="../assets/js/tailwindcdn.js"></script>
     <link href="../assets/css/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -37,21 +37,20 @@
     <!-- 工具列 -->
     <div class="fixed top-0 left-0 w-full bg-white/95 border-b border-gray-200 shadow-sm z-50 backdrop-blur-md">
         <div class="flex justify-center items-center py-3 px-4">
-            <div class="flex space-x-4">
-                <button id="refreshBtn"
+            <div class="flex space-x-4">                <button id="refreshBtn"
                         class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors font-medium flex items-center">
                     <span class="material-icons text-sm mr-1">refresh</span>
-                    <span>重新整理</span>
+                    <span data-i18n="refresh">重新整理</span>
                 </button>
                 <button id="clearBtn"
                         class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors font-medium flex items-center">
                     <span class="material-icons text-sm mr-1">delete</span>
-                    <span>清空</span>
+                    <span data-i18n="clear">清空</span>
                 </button>
                 <button id="testBtn"
                         class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors font-medium flex items-center">
                     <span class="material-icons text-sm mr-1">play_arrow</span>
-                    <span>測試</span>
+                    <span data-i18n="test">測試</span>
                 </button>
             </div>
         </div>
@@ -66,10 +65,9 @@
                         <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                             <span class="material-icons text-3xl text-white">auto_awesome</span>
                         </div>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl sm:text-4xl font-bold tracking-tight">語音摘要自訂提示記錄</h1>
-                        <p class="text-blue-100 text-sm sm:text-lg mt-2 font-light max-w-xl mx-auto">在此處查看和管理您所有已保存的自訂提示。</p>
+                    </div>                    <div>
+                        <h1 class="text-2xl sm:text-4xl font-bold tracking-tight" data-i18n="custom_voice_summary_prompt_records">語音摘要自訂提示記錄</h1>
+                        <p class="text-blue-100 text-sm sm:text-lg mt-2 font-light max-w-xl mx-auto" data-i18n="view_manage_saved_prompts">在此處查看和管理您所有已保存的自訂提示。</p>
                     </div>
                 </div>
             </div>
@@ -87,9 +85,8 @@
                         <div
                              class="w-14 h-14 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-8">
                             <span class="material-icons text-5xl text-white">lightbulb</span>
-                        </div>
-                        <h2 class="text-2xl sm:text-3xl font-semibold mb-6 text-gray-800">尚未記錄任何自訂提示</h2>
-                        <p class="text-gray-600 leading-relaxed max-w-sm mx-auto text-lg"> 當您在 NotebookLM
+                        </div>                        <h2 class="text-2xl sm:text-3xl font-semibold mb-6 text-gray-800" data-i18n="no_custom_prompts_recorded">尚未記錄任何自訂提示</h2>
+                        <p class="text-gray-600 leading-relaxed max-w-sm mx-auto text-lg" data-i18n="custom_prompts_description"> 當您在 NotebookLM
                             中使用自訂語音摘要功能時，提示會自動保存在這裡，讓您輕鬆記憶過往的自訂提示。 </p>
                     </div>
                 </div>
@@ -98,9 +95,8 @@
     </div>
     <!-- 固定在底部的頁尾 -->
     <footer
-            class="fixed bottom-0 left-0 w-full py-4 bg-white/95 backdrop-blur-md text-gray-500 text-sm border-t border-gray-200 shadow-lg z-50">
-        <div class="flex justify-center items-center">
-            <p>NotebookLM 萬能工具箱 © 2025</p>
+            class="fixed bottom-0 left-0 w-full py-4 bg-white/95 backdrop-blur-md text-gray-500 text-sm border-t border-gray-200 shadow-lg z-50">        <div class="flex justify-center items-center">
+            <p data-i18n="footer_copyright">NotebookLM 萬能工具箱 © 2025</p>
         </div>
     </footer>
     <script src="sidepanel.js"></script>

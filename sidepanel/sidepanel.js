@@ -3,6 +3,10 @@ const DEBUG = false;
 // sidepanel.js
 document.addEventListener('DOMContentLoaded', function () {
     if (DEBUG) console.log('[DEBUG] Side panel DOM loaded');
+
+    // 初始化翻譯
+    initializeTranslations();
+
     loadPrompts();
 
     // 按鈕事件監聽器
@@ -11,8 +15,24 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('testBtn').addEventListener('click', addTestPrompt);
 });
 
+// 初始化翻譯函式
+function initializeTranslations() {
+    // 更新頁面標題
+    document.getElementById('page-title').textContent = chrome.i18n.getMessage('query_custom_prompts');
+
+    // 更新所有帶有 data-i18n 屬性的元素
+    const elementsToTranslate = document.querySelectorAll('[data-i18n]');
+    elementsToTranslate.forEach(element => {
+        const messageKey = element.getAttribute('data-i18n');
+        const message = chrome.i18n.getMessage(messageKey);
+        if (message) {
+            element.textContent = message;
+        }
+    });
+}
+
 async function clearAllPrompts() {
-    if (confirm('確定要清空所有提示嗎？')) {
+    if (confirm(chrome.i18n.getMessage('confirm_clear_all_prompts'))) {
         await chrome.storage.local.set({ customPrompts: [] });
         await loadPrompts();
     }
@@ -96,19 +116,16 @@ function createPromptCard(prompt, index) {
 
     const truncatedContent = prompt.content.length > 150
         ? prompt.content.substring(0, 150) + '...'
-        : prompt.content;
-
-    // Get title and URL for display
-    const title = prompt.notebookName || '自訂提示內容';
+        : prompt.content;    // Get title and URL for display
+    const title = prompt.notebookName || chrome.i18n.getMessage('custom_prompt_content');
     const hasUrl = prompt.url && prompt.url !== '';
 
     return `
         <div class="bg-white p-6 rounded-lg border border-gray-200 relative hover:shadow-md transition-shadow duration-200 prompt-card" data-index="${index}">
-            <!-- 刪除按鈕浮動在右上角 -->
-            <button class="delete-btn absolute top-3 right-3 text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all duration-200"
+            <!-- 刪除按鈕浮動在右上角 -->            <button class="delete-btn absolute top-3 right-3 text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all duration-200"
                     data-index="${index}"
-                    title="刪除此提示"
-                    aria-label="刪除提示">
+                    title="${chrome.i18n.getMessage('delete_this_prompt')}"
+                    aria-label="${chrome.i18n.getMessage('delete_prompt')}">
                 <span class="material-icons text-lg">delete_outline</span>
             </button>
 
@@ -134,13 +151,12 @@ function createPromptCard(prompt, index) {
             <!-- 提示內容 -->
             <div class="prompt-content text-gray-600 whitespace-pre-wrap break-words leading-relaxed">${escapeHtml(truncatedContent)}</div>
 
-            <!-- 展開按鈕 -->
-            ${prompt.content.length > 150 ? `
+            <!-- 展開按鈕 -->            ${prompt.content.length > 150 ? `
                 <button class="expand-btn text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1 mt-3 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-all duration-200"
                         data-index="${index}"
-                        aria-label="顯示完整內容">
+                        aria-label="${chrome.i18n.getMessage('show_full_content')}">
                     <span class="material-icons text-sm">expand_more</span>
-                    <span>展開</span>
+                    <span>${chrome.i18n.getMessage('expand')}</span>
                 </button>
             ` : ''}
         </div>
@@ -159,21 +175,19 @@ function createPromptHTML(prompt, index) {
                 <div class="flex items-center space-x-2">
                     <span class="material-icons text-blue-500 text-lg">edit_note</span>
                     <div class="text-xs text-gray-500 font-medium bg-gray-100 px-3 py-1 rounded-full">${date}</div>
-                </div>
-                <button class="delete-btn text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all duration-200 flex-shrink-0 group"
+                </div>                <button class="delete-btn text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all duration-200 flex-shrink-0 group"
                         data-index="${index}"
-                        title="刪除此提示"
-                        aria-label="刪除提示">
+                        title="${chrome.i18n.getMessage('delete_this_prompt')}"
+                        aria-label="${chrome.i18n.getMessage('delete_prompt')}">
                     <span class="material-icons text-lg group-hover:scale-110 transition-transform">delete_outline</span>
                 </button>
             </div>
-            <div class="text-sm text-gray-700 leading-relaxed mb-4 whitespace-pre-wrap break-words font-light">${escapeHtml(truncatedContent)}</div>
-            ${prompt.content.length > 100 ? `
+            <div class="text-sm text-gray-700 leading-relaxed mb-4 whitespace-pre-wrap break-words font-light">${escapeHtml(truncatedContent)}</div>            ${prompt.content.length > 100 ? `
                 <button class="expand-btn text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center space-x-1 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-all duration-200"
                         data-index="${index}"
-                        aria-label="顯示完整內容">
+                        aria-label="${chrome.i18n.getMessage('show_full_content')}">
                     <span class="material-icons text-sm">expand_more</span>
-                    <span>顯示完整內容</span>
+                    <span>${chrome.i18n.getMessage('show_full_content')}</span>
                 </button>
             ` : ''}
         </div>
@@ -203,7 +217,7 @@ async function deletePrompt(index) {
         const result = await chrome.storage.local.get(['customPrompts']);
         const prompts = result.customPrompts || [];
 
-        if (confirm('確定要刪除這個自訂提示嗎？')) {
+        if (confirm(chrome.i18n.getMessage('confirm_delete_prompt'))) {
             prompts.splice(index, 1);
             await chrome.storage.local.set({ customPrompts: prompts });
             await loadPrompts(); // Reload the list
@@ -223,21 +237,19 @@ async function expandPrompt(index) {
             const contentDiv = promptElement.querySelector('.prompt-content');
             const expandBtn = promptElement.querySelector('.expand-btn');
             const expandIcon = expandBtn.querySelector('.material-icons');
-            const expandText = expandBtn.querySelector('span:last-child');
-
-            if (expandText.textContent.includes('展開')) {
+            const expandText = expandBtn.querySelector('span:last-child');            if (expandText.textContent.includes(chrome.i18n.getMessage('expand'))) {
                 contentDiv.innerHTML = escapeHtml(prompt.content);
-                expandText.textContent = '收起';
+                expandText.textContent = chrome.i18n.getMessage('collapse');
                 expandIcon.textContent = 'expand_less';
-                expandBtn.setAttribute('aria-label', '收起內容');
+                expandBtn.setAttribute('aria-label', chrome.i18n.getMessage('hide_content'));
             } else {
                 const truncatedContent = prompt.content.length > 150
                     ? prompt.content.substring(0, 150) + '...'
                     : prompt.content;
                 contentDiv.innerHTML = escapeHtml(truncatedContent);
-                expandText.textContent = '展開';
+                expandText.textContent = chrome.i18n.getMessage('expand');
                 expandIcon.textContent = 'expand_more';
-                expandBtn.setAttribute('aria-label', '顯示完整內容');
+                expandBtn.setAttribute('aria-label', chrome.i18n.getMessage('show_full_content'));
             }
         }
     } catch (error) {

@@ -1113,13 +1113,12 @@
                 const verification = await chrome.storage.local.get(['customPrompts']);
                 if (DEBUG) console.log('[DEBUG] Verification - prompts now in storage:', verification.customPrompts?.length || 0);
 
-                console.log('✅ Custom prompt saved successfully. Total prompts:', prompts.length);
-
-                // Send success notification
+                console.log('✅ Custom prompt saved successfully. Total prompts:', prompts.length);                // Send success notification
                 try {
+                    const message = `${chrome.i18n.getMessage('custom_prompt_saved')} (${chrome.i18n.getMessage('prompts_count').replace('{count}', prompts.length)})`;
                     chrome.runtime.sendMessage({
                         type: 'showNotification',
-                        message: `自訂提示已保存 (共 ${prompts.length} 個)`
+                        message: message
                     });
                 } catch (msgError) {
                     if (DEBUG) console.log('[DEBUG] Could not send success notification:', msgError);
@@ -1130,12 +1129,11 @@
                 console.log('ℹ️ Prompt already exists, skipping duplicate save');
             }
         } catch (error) {
-            console.error('❌ Error saving custom prompt:', error);
-            // Optionally show a user-friendly notification
+            console.error('❌ Error saving custom prompt:', error);            // Optionally show a user-friendly notification
             try {
                 chrome.runtime.sendMessage({
                     type: 'showNotification',
-                    message: '保存自訂提示時發生錯誤: ' + error.message
+                    message: chrome.i18n.getMessage('error_saving_prompt') + ' ' + error.message
                 });
             } catch (msgError) {
                 // If messaging fails, that's okay - just log it
