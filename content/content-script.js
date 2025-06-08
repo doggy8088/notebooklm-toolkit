@@ -1,6 +1,8 @@
 (async function () {
     'use strict';
 
+    const DEBUG = false;
+
     const hotkeyHandlers = [
         { test: matchHotkey({ ctrl: true, alt: true }, 'a'), handler: handleCtrlAltA },
         { test: matchHotkey({ ctrl: true, alt: true }, 'b'), handler: handleCtrlAltB },
@@ -807,12 +809,12 @@
             if (Math.random() < 0.05) { // Reduced frequency to avoid spam
                 const allTextareas = document.querySelectorAll('textarea');
                 const allButtons = document.querySelectorAll('button');
-                console.log(`[DEBUG] Page scan: ${allTextareas.length} textareas, ${allButtons.length} buttons`);
-                
+                if (DEBUG) console.log(`[DEBUG] Page scan: ${allTextareas.length} textareas, ${allButtons.length} buttons`);
+
                 // Log textareas with their attributes to help understand the structure
                 allTextareas.forEach((ta, index) => {
                     if (ta.value && ta.value.trim().length > 10) { // Only log textareas with meaningful content
-                        console.log(`[DEBUG] Textarea ${index}:`, {
+                        if (DEBUG) console.log(`[DEBUG] Textarea ${index}:`, {
                             placeholder: ta.placeholder,
                             formControlName: ta.getAttribute('formcontrolname'),
                             className: ta.className,
@@ -820,12 +822,12 @@
                         });
                     }
                 });
-                
+
                 // Log buttons that might be generate buttons
                 allButtons.forEach((btn, index) => {
                     const text = btn.textContent?.trim();
                     if (text && (text === '生成' || text === 'Generate' || text.includes('生成') || text.includes('Generate'))) {
-                        console.log(`[DEBUG] Potential generate button ${index}:`, {
+                        if (DEBUG) console.log(`[DEBUG] Potential generate button ${index}:`, {
                             text: text,
                             className: btn.className,
                             type: btn.type,
@@ -834,45 +836,45 @@
                     }
                 });
             }
-            
+
             // Look for the custom voice summary dialog with multiple detection strategies
             let generateButton = null;
             let episodeFocusTextarea = null;
-            
+
             // Strategy 1: Target specific NotebookLM dialog elements
             // Look for mat-dialog-container or similar dialog containers first
             const dialogContainers = document.querySelectorAll('mat-dialog-container, [role="dialog"], .cdk-overlay-pane');
-            
+
             for (const dialog of dialogContainers) {
                 // Look for textarea with custom focus content
                 const textareas = dialog.querySelectorAll('textarea');
                 const buttons = dialog.querySelectorAll('button');
-                
+
                 for (const textarea of textareas) {
                     // Check if this textarea might be for custom prompts
                     const hasCustomContent = textarea.value && textarea.value.trim().length > 0;
-                    const hasRelevantAttributes = 
+                    const hasRelevantAttributes =
                         textarea.getAttribute('formcontrolname')?.includes('episodeFocus') ||
                         textarea.getAttribute('formcontrolname')?.includes('focus') ||
                         textarea.placeholder?.toLowerCase().includes('focus') ||
                         textarea.placeholder?.toLowerCase().includes('自訂') ||
                         textarea.className?.toLowerCase().includes('focus') ||
                         textarea.className?.toLowerCase().includes('episode');
-                    
+
                     if (hasCustomContent || hasRelevantAttributes) {
                         episodeFocusTextarea = textarea;
-                        console.log('[DEBUG] Found textarea in dialog using Strategy 1:', {
+                        if (DEBUG) console.log('[DEBUG] Found textarea in dialog using Strategy 1:', {
                             formControlName: textarea.getAttribute('formcontrolname'),
                             placeholder: textarea.placeholder,
                             className: textarea.className,
                             hasContent: hasCustomContent,
                             contentPreview: textarea.value?.substring(0, 50) + '...'
                         });
-                        
+
                         // Look for corresponding generate button in the same dialog
                         for (const button of buttons) {
                             const buttonText = button.textContent?.trim();
-                            const isGenerateButton = 
+                            const isGenerateButton =
                                 buttonText === '生成' ||
                                 buttonText === 'Generate' ||
                                 buttonText?.includes('生成') ||
@@ -881,10 +883,10 @@
                                 button.getAttribute('color') === 'primary' ||
                                 button.className?.toLowerCase().includes('generate') ||
                                 button.className?.toLowerCase().includes('primary');
-                            
+
                             if (isGenerateButton) {
                                 generateButton = button;
-                                console.log('[DEBUG] Found button in dialog using Strategy 1:', {
+                                if (DEBUG) console.log('[DEBUG] Found button in dialog using Strategy 1:', {
                                     text: buttonText,
                                     type: button.type,
                                     color: button.getAttribute('color'),
@@ -893,20 +895,20 @@
                                 break;
                             }
                         }
-                        
+
                         if (generateButton) break;
                     }
                 }
-                
+
                 if (episodeFocusTextarea && generateButton) break;
             }
-            
+
             // Strategy 2: Original specific selectors (as fallback)
             if (!generateButton || !episodeFocusTextarea) {
                 generateButton = generateButton || document.querySelector('button.generate-button');
                 episodeFocusTextarea = episodeFocusTextarea || document.querySelector('textarea[formcontrolname="episodeFocus"]');
             }
-            
+
             // Strategy 3: More general document-wide search
             if (!generateButton || !episodeFocusTextarea) {
                 // Look for textareas with focus-related attributes or content
@@ -916,9 +918,9 @@
                     const formControlName = textarea.getAttribute('formcontrolname')?.toLowerCase() || '';
                     const className = textarea.className?.toLowerCase() || '';
                     const hasContent = textarea.value && textarea.value.trim().length > 10;
-                    
+
                     // Check for indicators that this is a custom prompt textarea
-                    if ((placeholder.includes('focus') || 
+                    if ((placeholder.includes('focus') ||
                         placeholder.includes('自訂') ||
                         placeholder.includes('custom') ||
                         formControlName.includes('focus') ||
@@ -926,7 +928,7 @@
                         className.includes('focus') ||
                         className.includes('episode')) && hasContent) {
                         episodeFocusTextarea = textarea;
-                        console.log('[DEBUG] Found textarea using Strategy 3:', {
+                        if (DEBUG) console.log('[DEBUG] Found textarea using Strategy 3:', {
                             placeholder,
                             formControlName,
                             className,
@@ -935,7 +937,7 @@
                         break;
                     }
                 }
-                
+
                 // Look for buttons that might be the generate button
                 if (!generateButton) {
                     const allButtons = document.querySelectorAll('button');
@@ -943,15 +945,15 @@
                         const text = button.textContent?.trim() || '';
                         const className = button.className?.toLowerCase() || '';
                         const type = button.type?.toLowerCase() || '';
-                        
-                        if (text === '生成' || 
+
+                        if (text === '生成' ||
                             text === 'Generate' ||
                             text.includes('生成') ||
                             text.includes('Generate') ||
                             (type === 'submit' && className.includes('primary')) ||
                             className.includes('generate')) {
                             generateButton = button;
-                            console.log('[DEBUG] Found button using Strategy 3:', {
+                            if (DEBUG) console.log('[DEBUG] Found button using Strategy 3:', {
                                 text,
                                 className,
                                 type
@@ -961,7 +963,7 @@
                     }
                 }
             }
-            
+
             // Strategy 4: Legacy fallback selectors
             if (!generateButton) {
                 generateButton = document.querySelector('mat-dialog-actions button[color="primary"]');
@@ -969,10 +971,10 @@
             if (!episodeFocusTextarea) {
                 episodeFocusTextarea = document.querySelector('textarea.episode-focus-input');
             }
-            
+
             // Debug: Enhanced logging when elements are found
             if (generateButton && episodeFocusTextarea) {
-                console.log('[DEBUG] ✅ Custom voice summary dialog elements found:', {
+                if (DEBUG) console.log('[DEBUG] ✅ Custom voice summary dialog elements found:', {
                     button: {
                         text: generateButton.textContent?.trim(),
                         className: generateButton.className,
@@ -989,44 +991,45 @@
                     }
                 });
             } else if (Math.random() < 0.02) { // Occasional logging when elements are not found
-                console.log('[DEBUG] ❌ Custom voice summary dialog elements not found:', {
+                if (DEBUG) console.log('[DEBUG] ❌ Custom voice summary dialog elements not found:', {
                     generateButton: !!generateButton,
                     episodeFocusTextarea: !!episodeFocusTextarea
                 });
             }
-            
+
             // Check if this is a new button (different from the last one we saw)
             const isNewButton = generateButton && generateButton !== lastGenerateButton;
-            
+
             if (generateButton && episodeFocusTextarea && (!generateButtonListenerAdded || isNewButton)) {
-                console.log('[DEBUG] 🎯 Adding click listener to generate button...', {
+                if (DEBUG) console.log('[DEBUG] 🎯 Adding click listener to generate button...', {
                     isNewButton,
                     generateButtonListenerAdded,
                     buttonIdentity: generateButton.outerHTML.substring(0, 100) + '...'
                 });
-                
+
                 // Add click listener to the generate button using both click and mousedown for reliability
                 const clickHandler = async function(event) {
+                    event.preventDefault();
                     try {
-                        console.log('[DEBUG] 🔥 Generate button clicked! Event type:', event.type);
-                        console.log('[DEBUG] Button clicked:', this);
-                        console.log('[DEBUG] Current textarea:', episodeFocusTextarea);
-                        
+                        if (DEBUG) console.log('[DEBUG] 🔥 Generate button clicked! Event type:', event.type);
+                        if (DEBUG) console.log('[DEBUG] Button clicked:', this);
+                        if (DEBUG) console.log('[DEBUG] Current textarea:', episodeFocusTextarea);
+
                         // Get the current value from the textarea at click time
                         const promptContent = episodeFocusTextarea.value?.trim();
-                        console.log('[DEBUG] Textarea content at click time:', {
+                        if (DEBUG) console.log('[DEBUG] Textarea content at click time:', {
                             length: promptContent?.length || 0,
                             content: promptContent?.substring(0, 100) + '...'
                         });
-                        
+
                         if (promptContent && promptContent.length > 0) {
-                            console.log('[DEBUG] 💾 Attempting to save prompt:', promptContent.substring(0, 50) + '...');
+                            if (DEBUG) console.log('[DEBUG] 💾 Attempting to save prompt:', promptContent.substring(0, 50) + '...');
                             await saveCustomPrompt(promptContent);
                         } else {
-                            console.log('[DEBUG] ⚠️  No content to save - textarea is empty or whitespace only');
-                            
+                            if (DEBUG) console.log('[DEBUG] ⚠️  No content to save - textarea is empty or whitespace only');
+
                             // Additional debugging: check if the textarea element is still valid
-                            console.log('[DEBUG] Textarea validation:', {
+                            if (DEBUG) console.log('[DEBUG] Textarea validation:', {
                                 exists: !!episodeFocusTextarea,
                                 inDocument: document.contains(episodeFocusTextarea),
                                 value: episodeFocusTextarea?.value,
@@ -1034,23 +1037,23 @@
                             });
                         }
                     } catch (error) {
-                        console.error('[DEBUG] ❌ Error handling generate button click:', error);
+                        if (DEBUG) console.error('[DEBUG] ❌ Error handling generate button click:', error);
                     }
                 };
-                
+
                 // Add listeners for multiple event types to ensure we catch the click
                 generateButton.addEventListener('click', clickHandler, { capture: true });
                 generateButton.addEventListener('mousedown', clickHandler, { capture: true });
-                
+
                 generateButtonListenerAdded = true;
                 lastGenerateButton = generateButton;
-                console.log('[DEBUG] ✅ Custom voice summary dialog listener added successfully');
+                if (DEBUG) console.log('[DEBUG] ✅ Custom voice summary dialog listener added successfully');
             }
-            
+
             // Reset flag if dialog is no longer present
             if (!generateButton || !episodeFocusTextarea) {
                 if (generateButtonListenerAdded && Math.random() < 0.01) { // Occasional logging to avoid spam
-                    console.log('[DEBUG] 🔄 Dialog elements no longer present, resetting listener flag');
+                    if (DEBUG) console.log('[DEBUG] 🔄 Dialog elements no longer present, resetting listener flag');
                 }
                 generateButtonListenerAdded = false;
                 lastGenerateButton = null;
@@ -1060,45 +1063,58 @@
         }
     }
 
+    // Function to extract notebook name from NotebookLM page
+    function getNotebookName() {
+        return document.title.replace(' - NotebookLM', '');
+    }
+
     async function saveCustomPrompt(content) {
         try {
-            console.log('[DEBUG] saveCustomPrompt called with content:', content.substring(0, 50) + '...');
-            
+            if (DEBUG) console.log('[DEBUG] saveCustomPrompt called with content:', content.substring(0, 50) + '...');
+
             // Get existing prompts from storage
             const result = await chrome.storage.local.get(['customPrompts']);
-            console.log('[DEBUG] Retrieved existing prompts from storage:', result);
+            if (DEBUG) console.log('[DEBUG] Retrieved existing prompts from storage:', result);
             const prompts = result.customPrompts || [];
-            console.log('[DEBUG] Current prompts count:', prompts.length);
-            
-            // Create new prompt object
+            if (DEBUG) console.log('[DEBUG] Current prompts count:', prompts.length);
+
+            // Get notebook name and current URL
+            const notebookName = getNotebookName();
+            const currentUrl = window.location.href;
+            if (DEBUG) console.log('[DEBUG] Notebook name:', notebookName);
+            if (DEBUG) console.log('[DEBUG] Current URL:', currentUrl);
+
+            // Create new prompt object with additional information
             const newPrompt = {
                 content: content,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                notebookName: notebookName,
+                url: currentUrl
             };
-            console.log('[DEBUG] Created new prompt object:', newPrompt);
-            
+            if (DEBUG) console.log('[DEBUG] Created new prompt object:', newPrompt);
+
             // Check if the same prompt already exists (avoid duplicates)
             const existingPrompt = prompts.find(p => p.content === content);
             if (!existingPrompt) {
                 prompts.unshift(newPrompt); // Add to beginning of array
-                console.log('[DEBUG] Added new prompt, total count now:', prompts.length);
-                
+                if (DEBUG) console.log('[DEBUG] Added new prompt, total count now:', prompts.length);
+
                 // Keep only the most recent 50 prompts to avoid storage bloat
                 if (prompts.length > 50) {
                     const removed = prompts.splice(50);
-                    console.log('[DEBUG] Removed', removed.length, 'old prompts to stay under limit');
+                    if (DEBUG) console.log('[DEBUG] Removed', removed.length, 'old prompts to stay under limit');
                 }
-                
+
                 // Save back to storage
                 await chrome.storage.local.set({ customPrompts: prompts });
-                console.log('[DEBUG] Saved prompts to storage successfully');
-                
+                if (DEBUG) console.log('[DEBUG] Saved prompts to storage successfully');
+
                 // Verify the save by reading it back
                 const verification = await chrome.storage.local.get(['customPrompts']);
-                console.log('[DEBUG] Verification - prompts now in storage:', verification.customPrompts?.length || 0);
-                
+                if (DEBUG) console.log('[DEBUG] Verification - prompts now in storage:', verification.customPrompts?.length || 0);
+
                 console.log('✅ Custom prompt saved successfully. Total prompts:', prompts.length);
-                
+
                 // Send success notification
                 try {
                     chrome.runtime.sendMessage({
@@ -1106,11 +1122,11 @@
                         message: `自訂提示已保存 (共 ${prompts.length} 個)`
                     });
                 } catch (msgError) {
-                    console.log('[DEBUG] Could not send success notification:', msgError);
+                    if (DEBUG) console.log('[DEBUG] Could not send success notification:', msgError);
                 }
-                
+
             } else {
-                console.log('[DEBUG] Prompt already exists, skipping duplicate save');
+                if (DEBUG) console.log('[DEBUG] Prompt already exists, skipping duplicate save');
                 console.log('ℹ️ Prompt already exists, skipping duplicate save');
             }
         } catch (error) {

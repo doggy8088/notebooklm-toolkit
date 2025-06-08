@@ -1,6 +1,8 @@
+const DEBUG = false;
+
 // sidepanel.js
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('[DEBUG] Side panel DOM loaded');
+    if (DEBUG) console.log('[DEBUG] Side panel DOM loaded');
     loadPrompts();
 
     // 按鈕事件監聽器
@@ -20,7 +22,9 @@ async function addTestPrompt() {
     const testPrompt = {
         content: `節目名稱不要叫「深入探索」，節目名稱改為「保哥帶你聽」。
 節目內容應該詳細且具體，整場節目必須超過30分鐘。`,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        notebookName: '測試筆記本',
+        url: 'https://notebooklm.google.com/notebook/test-notebook-id'
     };
 
     const result = await chrome.storage.local.get(['customPrompts']);
@@ -33,17 +37,20 @@ async function addTestPrompt() {
 
 async function loadPrompts() {
     try {
-        console.log('[DEBUG] Loading prompts from storage...');
+        if (DEBUG) console.log('[DEBUG] Loading prompts from storage...');
         const result = await chrome.storage.local.get(['customPrompts']);
         const prompts = result.customPrompts || [];
-        console.log('[DEBUG] Retrieved prompts:', prompts);
+        if (DEBUG) console.log('[DEBUG] Retrieved prompts:', prompts);
 
         const container = document.getElementById('prompts-container');
-        const emptyState = document.getElementById('empty-state'); console.log('[DEBUG] Container element:', container);
-        console.log('[DEBUG] Empty state element:', emptyState);
-        console.log('[DEBUG] Empty state classes before:', emptyState?.className);
-        console.log('[DEBUG] Empty state display before:', emptyState?.style.display); if (prompts.length === 0) {
-            console.log('[DEBUG] No prompts found, showing empty state');
+        const emptyState = document.getElementById('empty-state');
+        if (DEBUG) console.log('[DEBUG] Container element:', container);
+        if (DEBUG) console.log('[DEBUG] Empty state element:', emptyState);
+        if (DEBUG) console.log('[DEBUG] Empty state classes before:', emptyState?.className);
+        if (DEBUG) console.log('[DEBUG] Empty state display before:', emptyState?.style.display);
+
+        if (prompts.length === 0) {
+            if (DEBUG) console.log('[DEBUG] No prompts found, showing empty state');
             if (container) {
                 container.style.display = 'none';
                 container.innerHTML = '';
@@ -51,8 +58,9 @@ async function loadPrompts() {
             if (emptyState) {
                 emptyState.classList.remove('hidden');
                 emptyState.style.display = 'block';
-            }        } else {
-            console.log('[DEBUG] Found', prompts.length, 'prompts, displaying them');
+            }
+        } else {
+            if (DEBUG) console.log('[DEBUG] Found', prompts.length, 'prompts, displaying them');
             if (container) {
                 container.style.display = 'block';
                 container.innerHTML = createPromptsCards(prompts);
@@ -62,10 +70,10 @@ async function loadPrompts() {
             }
         }
 
-        console.log('[DEBUG] Empty state classes after:', emptyState?.className);
-        console.log('[DEBUG] Empty state display after:', emptyState?.style.display);
+        if (DEBUG) console.log('[DEBUG] Empty state classes after:', emptyState?.className);
+        if (DEBUG) console.log('[DEBUG] Empty state display after:', emptyState?.style.display);
     } catch (error) {
-        console.error('[DEBUG] Error loading prompts:', error);
+        if (DEBUG) console.error('[DEBUG] Error loading prompts:', error);
     }
 }
 
@@ -88,7 +96,13 @@ function createPromptCard(prompt, index) {
 
     const truncatedContent = prompt.content.length > 150
         ? prompt.content.substring(0, 150) + '...'
-        : prompt.content;    return `
+        : prompt.content;
+
+    // Get title and URL for display
+    const title = prompt.notebookName || '自訂提示內容';
+    const hasUrl = prompt.url && prompt.url !== '';
+
+    return `
         <div class="bg-white p-6 rounded-lg border border-gray-200 relative hover:shadow-md transition-shadow duration-200 prompt-card" data-index="${index}">
             <!-- 刪除按鈕浮動在右上角 -->
             <button class="delete-btn absolute top-3 right-3 text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all duration-200"
@@ -104,8 +118,18 @@ function createPromptCard(prompt, index) {
                 <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${date}</span>
             </div>
 
-            <!-- 內容標題 -->
-            <h3 class="text-lg font-semibold mb-2 pr-10">自訂提示內容</h3>
+            <!-- 筆記本標題和連結 -->
+            <div class="mb-2 pr-10">
+                ${hasUrl ? `
+                    <a href="${prompt.url}" target="_blank" rel="noopener noreferrer"
+                       class="text-lg font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors duration-200 flex items-center gap-1">
+                        ${escapeHtml(title)}
+                        <span class="material-icons text-sm">open_in_new</span>
+                    </a>
+                ` : `
+                    <h3 class="text-lg font-semibold text-gray-800">${escapeHtml(title)}</h3>
+                `}
+            </div>
 
             <!-- 提示內容 -->
             <div class="prompt-content text-gray-600 whitespace-pre-wrap break-words leading-relaxed">${escapeHtml(truncatedContent)}</div>
@@ -193,7 +217,8 @@ async function expandPrompt(index) {
     try {
         const result = await chrome.storage.local.get(['customPrompts']);
         const prompts = result.customPrompts || [];
-        const prompt = prompts[index]; if (prompt) {
+        const prompt = prompts[index];
+        if (prompt) {
             const promptElement = document.querySelector(`div[data-index="${index}"]`);
             const contentDiv = promptElement.querySelector('.prompt-content');
             const expandBtn = promptElement.querySelector('.expand-btn');
