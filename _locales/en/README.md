@@ -16,4 +16,3 @@ Enhance your NotebookLM website experience with keyboard shortcuts, enhanced but
   - Right-click the extension icon and select "Custom Audio Summary Prompt History" to view saved prompts
   - Supports prompt management: view, expand/collapse, and delete functions
   - Prevents duplicate saves, automatically manages the most recent 50 prompts
-  - For detailed instructions, see [Custom Prompts Feature Guide](CUSTOM_PROMPTS_FEATURE.md)
