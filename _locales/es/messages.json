@@ -1,9 +1,9 @@
 {
     "tool_name": {
-        "message": "Kit de Herramientas NotebookLM"
+        "message": "Caja de Herramientas Universal de NotebookLM"
     },
     "tool_description": {
-        "message": "Mejora tu experiencia web de NotebookLM con atajos de teclado, botones mejorados y acceso rápido a NotebookLM."
+        "message": "Mejora tu experiencia de uso del sitio web de NotebookLM, proporcionando atajos de teclado, botones mejorados y botón de acceso rápido a NotebookLM."
     },
     "tool_author": {
         "message": "Will Huang"
@@ -13,5 +13,8 @@
     },
     "copy_mindmap_content": {
         "message": "Copiar contenido del mapa mental"
+    },
+    "query_custom_prompts": {
+        "message": "Registros de indicaciones personalizadas para resumen de audio"
     }
 }

@@ -13,5 +13,8 @@
     },
     "copy_mindmap_content": {
         "message": "마인드맵 내용 복사"
+    },
+    "query_custom_prompts": {
+        "message": "음성 요약의 맞춤 프롬프트 기록"
     }
 }

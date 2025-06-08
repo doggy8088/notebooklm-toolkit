@@ -1,9 +1,9 @@
 {
     "tool_name": {
-        "message": "NotebookLM Toolkit"
+        "message": "NotebookLM Universelles Toolkit"
     },
     "tool_description": {
-        "message": "Verbessern Sie Ihr NotebookLM-Web-Erlebnis mit Tastenkombinationen, erweiterten Schaltflächen und schnellem Zugriff auf NotebookLM."
+        "message": "Verbessern Sie Ihr NotebookLM-Website-Erlebnis mit Tastenkombinationen, erweiterten Schaltflächen und einem Schnellzugriff-Button für NotebookLM."
     },
     "tool_author": {
         "message": "Will Huang"
@@ -12,6 +12,9 @@
         "message": "Inhalt kopieren"
     },
     "copy_mindmap_content": {
-        "message": "Mindmap-Inhalt kopieren"
+        "message": "Gedankenkarten-Inhalt kopieren"
+    },
+    "query_custom_prompts": {
+        "message": "Benutzerdefinierte Prompt-Aufzeichnungen für Sprachzusammenfassungen"
     }
 }

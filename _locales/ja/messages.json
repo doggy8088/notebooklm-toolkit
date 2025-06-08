@@ -10,8 +10,10 @@
     },
     "copy_content": {
         "message": "内容をコピー"
-    },
-    "copy_mindmap_content": {
+    },    "copy_mindmap_content": {
         "message": "マインドマップの内容をコピー"
+    },
+    "query_custom_prompts": {
+        "message": "音声要約のカスタムプロンプト記録"
     }
 }

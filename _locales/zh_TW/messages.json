@@ -15,6 +15,6 @@
         "message": "複製心智圖內容"
     },
     "query_custom_prompts": {
-        "message": "查詢自訂提示"
+        "message": "語音摘要的自訂提示記錄"
     }
 }

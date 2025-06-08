@@ -13,8 +13,7 @@
     },
     "copy_mindmap_content": {
         "message": "Copy Mindmap Content"
-    },
-    "query_custom_prompts": {
-        "message": "Query Custom Prompts"
+    },    "query_custom_prompts": {
+        "message": "Custom Prompt Records for Audio Summary"
     }
 }
