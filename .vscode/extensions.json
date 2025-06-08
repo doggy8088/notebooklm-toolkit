@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "solomonkinard.chrome-extension-api",
-        "cezaraugusto.vscode-chrome-extesion-manifest-json-schema"
+        "cezaraugusto.vscode-chrome-extesion-manifest-json-schema",
+        "csstools.postcss",
+        "bradlc.vscode-tailwindcss"
     ]
 }
