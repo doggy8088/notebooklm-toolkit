@@ -6,11 +6,13 @@ function extractParameter(paramName, htmlContent) {
 }
 
 async function prepareRPCRequest(options) {
-    const { host, app, rpcs } = options;
-    const url = new URL(`https://${host}/_/n/rpc`);
+    const { rpcs } = options;
+    const url = new URL('https://notebooklm.google.com/_/n/rpc');
     
     const headers = new Headers();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
+    headers.append('Origin', 'https://notebooklm.google.com');
+    headers.append('Referer', 'https://notebooklm.google.com/');
     
     const body = new URLSearchParams();
     body.append('f.req', JSON.stringify(rpcs));
@@ -20,9 +22,33 @@ async function prepareRPCRequest(options) {
 
 async function parseRPCResponse(response) {
     const text = await response.text();
-    // Parse the response format that starts with )]}' 
-    const jsonStr = text.substring(text.indexOf('['));
-    return JSON.parse(jsonStr);
+    
+    // Handle empty or invalid responses
+    if (!text || text.trim().length === 0) {
+        throw new Error("Empty response from server");
+    }
+    
+    try {
+        // Parse the response format that starts with )]}' 
+        let jsonStr = text;
+        if (text.startsWith(")]}'\n")) {
+            jsonStr = text.substring(5);
+        } else if (text.indexOf('[') > 0) {
+            jsonStr = text.substring(text.indexOf('['));
+        }
+        
+        const parsed = JSON.parse(jsonStr);
+        
+        // Validate the response structure
+        if (!Array.isArray(parsed)) {
+            throw new Error("Invalid response format");
+        }
+        
+        return parsed;
+    } catch (error) {
+        console.error("Failed to parse RPC response:", text);
+        throw new Error("Invalid response from NotebookLM API");
+    }
 }
 
 // NotebookLM API client
@@ -63,8 +89,6 @@ class NotebookLMClient {
 
     async execute(rpcRequests) {
         const { url, headers, body } = await prepareRPCRequest({
-            host: "notebooklm.google.com",
-            app: "LabsTailwindUi",
             rpcs: rpcRequests
         });
 
@@ -118,7 +142,7 @@ class NotebookLMClient {
     }
 
     async addTextSource(notebookId, title, content) {
-        // Add text content as source
+        // Add text content as source - format according to the provided example
         const response = await this.execute([{
             id: "izAoDd",
             args: [[
@@ -158,27 +182,60 @@ async function getCurrentPageContent() {
         throw new Error("No active tab found");
     }
 
-    // Execute content script to get page content
-    const results = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        function: extractPageContent
-    });
-
-    if (!results || !results[0] || !results[0].result) {
-        throw new Error("Failed to extract page content");
+    // Check if the tab URL is accessible
+    if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://') || tab.url.startsWith('moz-extension://')) {
+        throw new Error("Cannot access browser internal pages");
     }
 
-    return {
-        title: tab.title || "Untitled",
-        url: tab.url,
-        content: results[0].result
-    };
+    try {
+        // Execute content script to get page content
+        const results = await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            function: extractPageContent
+        });
+
+        if (!results || !results[0] || !results[0].result) {
+            throw new Error("Failed to extract page content");
+        }
+
+        const content = results[0].result;
+        
+        // Ensure we have some content
+        if (!content || content.trim().length === 0) {
+            throw new Error("No content found on the page");
+        }
+
+        // Limit content size (NotebookLM has limits)
+        const maxContentLength = 500000; // 500KB limit
+        let finalContent = content;
+        
+        if (content.length > maxContentLength) {
+            finalContent = content.substring(0, maxContentLength) + '\n\n*[Content truncated due to size limit]*';
+        }
+
+        return {
+            title: tab.title || "Untitled",
+            url: tab.url,
+            content: finalContent
+        };
+    } catch (error) {
+        console.error("Error executing content script:", error);
+        
+        // Fallback: use basic page information
+        return {
+            title: tab.title || "Untitled",
+            url: tab.url,
+            content: `# ${tab.title || "Untitled"}\n\nURL: ${tab.url}\n\n*Content could not be extracted from this page.*`
+        };
+    }
 }
 
 // Function to be injected into the page to extract content
 function extractPageContent() {
     try {
-        // Use existing turndown library if available
+        let markdownContent = '';
+        
+        // Try to use existing TurndownService if available (from NotebookLM pages)
         if (typeof TurndownService !== 'undefined') {
             const turndownService = new TurndownService({
                 headingStyle: 'atx',
@@ -197,39 +254,99 @@ function extractPageContent() {
                 'script', 'style', 'nav', 'header', 'footer', 'aside', 
                 '.ads', '.advertisement', '.social-sharing', '#comments',
                 '[class*="cookie"]', '[class*="popup"]', '[class*="modal"]',
-                '[id*="cookie"]', '[id*="popup"]', '[id*="modal"]'
+                '[id*="cookie"]', '[id*="popup"]', '[id*="modal"]',
+                '.sidebar', '.navigation', '.menu', '.share', '.related'
             ];
             
             unwantedSelectors.forEach(selector => {
-                const elements = clonedElement.querySelectorAll(selector);
-                elements.forEach(el => el.remove());
+                try {
+                    const elements = clonedElement.querySelectorAll(selector);
+                    elements.forEach(el => el.remove());
+                } catch (e) {
+                    // Ignore selector errors
+                }
             });
             
             // Try to find main content
             let mainContent = clonedElement.querySelector('main, article, .content, .post, .entry-content, .post-content, [role="main"]') || clonedElement.querySelector('body');
             
             if (mainContent) {
-                return turndownService.turndown(mainContent.innerHTML);
+                markdownContent = turndownService.turndown(mainContent.innerHTML);
             }
         }
         
-        // Fallback: extract text content and format as basic markdown
-        let mainContent = document.querySelector('main, article, .content, .post, .entry-content, .post-content, [role="main"]') || document.body;
-        
-        if (!mainContent) {
-            return document.title + '\n\n' + (document.body.innerText || document.body.textContent || '');
+        // Fallback: create basic markdown from text content
+        if (!markdownContent || markdownContent.trim().length === 0) {
+            const title = document.title;
+            let content = '';
+            
+            // Try to find main content element
+            const mainElement = document.querySelector('main, article, .content, .post, .entry-content, .post-content, [role="main"]') || document.body;
+            
+            if (mainElement) {
+                // Extract headings and paragraphs
+                const headings = mainElement.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                const paragraphs = mainElement.querySelectorAll('p');
+                const lists = mainElement.querySelectorAll('ul, ol');
+                
+                // Build basic markdown
+                if (headings.length > 0) {
+                    headings.forEach(heading => {
+                        const level = parseInt(heading.tagName[1]);
+                        const prefix = '#'.repeat(level);
+                        content += `${prefix} ${heading.textContent.trim()}\n\n`;
+                    });
+                }
+                
+                if (paragraphs.length > 0) {
+                    paragraphs.forEach(p => {
+                        const text = p.textContent.trim();
+                        if (text) {
+                            content += `${text}\n\n`;
+                        }
+                    });
+                }
+                
+                if (lists.length > 0) {
+                    lists.forEach(list => {
+                        const items = list.querySelectorAll('li');
+                        items.forEach(item => {
+                            content += `- ${item.textContent.trim()}\n`;
+                        });
+                        content += '\n';
+                    });
+                }
+                
+                // If no structured content found, use all text
+                if (!content.trim()) {
+                    content = mainElement.textContent.trim();
+                }
+            }
+            
+            // Final fallback
+            if (!content.trim()) {
+                content = document.body.textContent.trim() || 'No content found';
+            }
+            
+            markdownContent = `# ${title}\n\n${content}`;
         }
         
-        const title = document.title;
-        const content = mainContent.innerText || mainContent.textContent || '';
+        // Clean up excessive whitespace
+        markdownContent = markdownContent.replace(/\n{3,}/g, '\n\n').trim();
         
-        // Basic markdown formatting
-        return `# ${title}\n\n${content}`;
+        // Add URL as metadata
+        markdownContent += `\n\n---\n*Source: ${window.location.href}*`;
+        
+        return markdownContent;
         
     } catch (error) {
         console.error('Error extracting content:', error);
         // Ultimate fallback
-        return document.title + '\n\n' + (document.body.innerText || document.body.textContent || 'Unable to extract content');
+        const title = document.title || 'Untitled';
+        const url = window.location.href;
+        const basicContent = document.body.textContent || document.body.innerText || 'Unable to extract content';
+        
+        return `# ${title}\n\n${basicContent}\n\n---\n*Source: ${url}*`;
     }
 }
 
