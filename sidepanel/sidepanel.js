@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 按鈕事件監聽器
     document.getElementById('refreshBtn').addEventListener('click', loadPrompts);
     document.getElementById('clearBtn').addEventListener('click', clearAllPrompts);
-    document.getElementById('testBtn').addEventListener('click', addTestPrompt);
+    document.getElementById('testBtn')?.addEventListener('click', addTestPrompt);
 });
 
 // 初始化翻譯函式
