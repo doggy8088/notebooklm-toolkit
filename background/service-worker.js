@@ -1,8 +1,9 @@
 const DEFAULT_URL = "https://notebooklm.google.com/";
 
-chrome.action.onClicked.addListener((tab) => {
-  chrome.tabs.create({ url: DEFAULT_URL });
-});
+// Remove the old action click handler since we now have a popup
+// chrome.action.onClicked.addListener((tab) => {
+//   chrome.tabs.create({ url: DEFAULT_URL });
+// });
 
 chrome.runtime.onInstalled.addListener(() => {
 

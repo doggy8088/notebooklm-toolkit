@@ -13,5 +13,35 @@
     },
     "copy_mindmap_content": {
         "message": "マインドマップの内容をコピー"
+    },
+    "popup_importToNotebookLM_title": {
+        "message": "NotebookLMにインポート"
+    },
+    "popup_connecting": {
+        "message": "NotebookLMに接続中..."
+    },
+    "popup_pleaseSignIn": {
+        "message": "NotebookLMにサインインしてください"
+    },
+    "popup_selectNotebook": {
+        "message": "ノートブックを選択："
+    },
+    "popup_importToNotebook": {
+        "message": "ノートブックにインポート"
+    },
+    "popup_createNewNotebook": {
+        "message": "新しいノートブックを作成"
+    },
+    "popup_autoAudioOverview": {
+        "message": "音声概要を自動作成"
+    },
+    "popup_successfullyImported": {
+        "message": "正常にインポートされました！"
+    },
+    "popup_noNotebooks": {
+        "message": "ノートブックが見つかりません"
+    },
+    "popup_defaultNotebookTitle": {
+        "message": "インポートされたコンテンツ"
     }
 }

@@ -9,7 +9,7 @@
     "service_worker": "background/service-worker.js"
   },
   "action": {
-    "default_popup": "",
+    "default_popup": "popup/popup.html",
     "default_icon": {
       "16": "assets/icons/icon16.png",
       "48": "assets/icons/icon48.png",
@@ -33,12 +33,15 @@
     }
   ],
   "host_permissions": [
-    "https://notebooklm.google.com/*"
+    "https://notebooklm.google.com/*",
+    "https://*/*",
+    "http://*/*"
   ],
   "permissions": [
     "notifications",
     "contextMenus",
     "activeTab",
-    "storage"
+    "storage",
+    "scripting"
   ]
 }

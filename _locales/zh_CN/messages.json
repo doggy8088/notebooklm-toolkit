@@ -13,5 +13,35 @@
     },
     "copy_mindmap_content": {
         "message": "复制思维导图内容"
+    },
+    "popup_importToNotebookLM_title": {
+        "message": "导入至 NotebookLM"
+    },
+    "popup_connecting": {
+        "message": "连接至 NotebookLM..."
+    },
+    "popup_pleaseSignIn": {
+        "message": "请登录 NotebookLM"
+    },
+    "popup_selectNotebook": {
+        "message": "选择笔记本："
+    },
+    "popup_importToNotebook": {
+        "message": "导入至笔记本"
+    },
+    "popup_createNewNotebook": {
+        "message": "创建新笔记本"
+    },
+    "popup_autoAudioOverview": {
+        "message": "自动创建音频概述"
+    },
+    "popup_successfullyImported": {
+        "message": "成功导入！"
+    },
+    "popup_noNotebooks": {
+        "message": "找不到笔记本"
+    },
+    "popup_defaultNotebookTitle": {
+        "message": "导入的内容"
     }
 }

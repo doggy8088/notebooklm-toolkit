@@ -13,5 +13,35 @@
     },
     "copy_mindmap_content": {
         "message": "複製心智圖內容"
+    },
+    "popup_importToNotebookLM_title": {
+        "message": "匯入至 NotebookLM"
+    },
+    "popup_connecting": {
+        "message": "連接至 NotebookLM..."
+    },
+    "popup_pleaseSignIn": {
+        "message": "請登入 NotebookLM"
+    },
+    "popup_selectNotebook": {
+        "message": "選擇筆記本："
+    },
+    "popup_importToNotebook": {
+        "message": "匯入至筆記本"
+    },
+    "popup_createNewNotebook": {
+        "message": "建立新筆記本"
+    },
+    "popup_autoAudioOverview": {
+        "message": "自動建立音訊概覽"
+    },
+    "popup_successfullyImported": {
+        "message": "成功匯入！"
+    },
+    "popup_noNotebooks": {
+        "message": "找不到筆記本"
+    },
+    "popup_defaultNotebookTitle": {
+        "message": "匯入的內容"
     }
 }

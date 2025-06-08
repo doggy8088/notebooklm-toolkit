@@ -13,5 +13,35 @@
     },
     "copy_mindmap_content": {
         "message": "Copy Mindmap Content"
+    },
+    "popup_importToNotebookLM_title": {
+        "message": "Import to NotebookLM"
+    },
+    "popup_connecting": {
+        "message": "Connecting to NotebookLM..."
+    },
+    "popup_pleaseSignIn": {
+        "message": "Please sign in to NotebookLM"
+    },
+    "popup_selectNotebook": {
+        "message": "Select Notebook:"
+    },
+    "popup_importToNotebook": {
+        "message": "Import to Notebook"
+    },
+    "popup_createNewNotebook": {
+        "message": "Create New Notebook"
+    },
+    "popup_autoAudioOverview": {
+        "message": "Auto create audio overview"
+    },
+    "popup_successfullyImported": {
+        "message": "Successfully imported!"
+    },
+    "popup_noNotebooks": {
+        "message": "No notebooks found"
+    },
+    "popup_defaultNotebookTitle": {
+        "message": "Imported Content"
     }
 }
