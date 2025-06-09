@@ -1,2 +1,10 @@
 @tailwind base;
 @tailwind components;
+@tailwind utilities;
+
+/* 自訂樣式區塊（如有需要，可加入自訂 CSS） */
+/*
+.example-custom-class {
+    @apply text-blue-600 font-bold;
+}
+*/

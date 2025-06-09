@@ -12,7 +12,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // 按鈕事件監聽器
     document.getElementById('refreshBtn').addEventListener('click', loadPrompts);
     document.getElementById('clearBtn').addEventListener('click', clearAllPrompts);
-    document.getElementById('testBtn').addEventListener('click', addTestPrompt);
+    document.getElementById('testBtn')?.addEventListener('click', addTestPrompt);
+
+    // 監聽來自背景腳本的訊息
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.type === 'refreshSidePanelData') {
+            if (DEBUG) console.log('[DEBUG] 🔄 Received refresh message, reloading prompts...');
+            loadPrompts();
+        }
+    });
 });
 
 // 初始化翻譯函式
