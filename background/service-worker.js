@@ -29,6 +29,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'showNotification') {
     showNotification(message.message, 'error');
+  } else if (message.type === 'refreshSidePanel') {
+    // Try to send refresh message to sidePanel
+    // This will only work if the sidePanel is actually open
+    chrome.runtime.sendMessage({
+      type: 'refreshSidePanelData',
+      source: 'service-worker'
+    }).catch(() => {
+      // Silently ignore if sidePanel is not open
+      // This is expected behavior when sidePanel is closed
+    });
   }
 });
 

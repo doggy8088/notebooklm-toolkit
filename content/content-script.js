@@ -1008,7 +1008,7 @@
                 });
 
                 // Add click listener to the generate button using both click and mousedown for reliability
-                const clickHandler = async function(event) {
+                const clickHandler = async function (event) {
                     event.preventDefault();
                     try {
                         if (DEBUG) console.log('[DEBUG] 🔥 Generate button clicked! Event type:', event.type);
@@ -1025,6 +1025,17 @@
                         if (promptContent && promptContent.length > 0) {
                             if (DEBUG) console.log('[DEBUG] 💾 Attempting to save prompt:', promptContent.substring(0, 50) + '...');
                             await saveCustomPrompt(promptContent);
+
+                            // Try to refresh sidePanel if it's already open
+                            try {
+                                await chrome.runtime.sendMessage({
+                                    type: 'refreshSidePanel',
+                                    source: 'content-script'
+                                });
+                                if (DEBUG) console.log('[DEBUG] 🔄 Sent refresh message to sidePanel');
+                            } catch (error) {
+                                if (DEBUG) console.log('[DEBUG] 📄 SidePanel refresh message failed (probably not open):', error.message);
+                            }
                         } else {
                             if (DEBUG) console.log('[DEBUG] ⚠️  No content to save - textarea is empty or whitespace only');
 
