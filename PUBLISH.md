@@ -6,7 +6,7 @@ Simply zip whole folder as a zip file and upload to [Chrome Web Store](https://c
 
 ```sh
 $filePath = "Extension_v0.16.1.zip"
-7z a $filePath _locales images src CHANGELOG.md manifest.json README.*
+7z a $filePath _locales content background assets sidepanel options popup CHANGELOG.md manifest.json README.*
 (Get-ChildItem -Path . -Filter $filePath -Recurse | Select-Object -ExpandProperty FullName) | Set-Clipboard
 ```
 
