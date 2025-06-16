@@ -802,6 +802,7 @@
     // Track if we've already added listener to avoid duplicates
     let generateButtonListenerAdded = false;
     let lastGenerateButton = null;
+    let lastClickHandler = null;
 
     function monitorCustomVoiceSummaryDialog() {
         try {
@@ -1007,17 +1008,39 @@
                     buttonIdentity: generateButton.outerHTML.substring(0, 100) + '...'
                 });
 
+                // Remove old listener if this is a new button
+                if (isNewButton && lastGenerateButton && lastClickHandler) {
+                    try {
+                        lastGenerateButton.removeEventListener('click', lastClickHandler);
+                        if (DEBUG) console.log('[DEBUG] 🗑️ Removed old click listener from previous button');
+                    } catch (error) {
+                        if (DEBUG) console.log('[DEBUG] Could not remove old listener:', error);
+                    }
+                }
+
                 // Add click listener to the generate button using both click and mousedown for reliability
                 const clickHandler = async function (event) {
-                    event.preventDefault();
                     try {
                         if (DEBUG) console.log('[DEBUG] 🔥 Generate button clicked! Event type:', event.type);
                         if (DEBUG) console.log('[DEBUG] Button clicked:', this);
                         if (DEBUG) console.log('[DEBUG] Current textarea:', episodeFocusTextarea);
 
-                        // Get the current value from the textarea at click time
-                        const promptContent = episodeFocusTextarea.value?.trim();
-                        if (DEBUG) console.log('[DEBUG] Textarea content at click time:', {
+                        // Add a small delay to ensure any pending input is captured
+                        await new Promise(resolve => setTimeout(resolve, 100));
+
+                        // Re-verify the textarea is still available and get its current value
+                        const currentTextarea = episodeFocusTextarea && document.contains(episodeFocusTextarea) 
+                            ? episodeFocusTextarea 
+                            : null;
+                        
+                        if (!currentTextarea) {
+                            if (DEBUG) console.log('[DEBUG] ⚠️ Textarea no longer available after delay');
+                            return;
+                        }
+
+                        // Get the current value from the textarea after delay
+                        const promptContent = currentTextarea.value?.trim();
+                        if (DEBUG) console.log('[DEBUG] Textarea content after delay:', {
                             length: promptContent?.length || 0,
                             content: promptContent?.substring(0, 100) + '...'
                         });
@@ -1041,10 +1064,10 @@
 
                             // Additional debugging: check if the textarea element is still valid
                             if (DEBUG) console.log('[DEBUG] Textarea validation:', {
-                                exists: !!episodeFocusTextarea,
-                                inDocument: document.contains(episodeFocusTextarea),
-                                value: episodeFocusTextarea?.value,
-                                valueLength: episodeFocusTextarea?.value?.length
+                                exists: !!currentTextarea,
+                                inDocument: currentTextarea ? document.contains(currentTextarea) : false,
+                                value: currentTextarea?.value,
+                                valueLength: currentTextarea?.value?.length
                             });
                         }
                     } catch (error) {
@@ -1052,9 +1075,11 @@
                     }
                 };
 
-                // Add listeners for multiple event types to ensure we catch the click
-                generateButton.addEventListener('click', clickHandler, { capture: true });
-                generateButton.addEventListener('mousedown', clickHandler, { capture: true });
+                // Add listeners for click event without capture to avoid interfering with NotebookLM
+                generateButton.addEventListener('click', clickHandler);
+                
+                // Store references for cleanup
+                lastClickHandler = clickHandler;
 
                 generateButtonListenerAdded = true;
                 lastGenerateButton = generateButton;
@@ -1068,6 +1093,7 @@
                 }
                 generateButtonListenerAdded = false;
                 lastGenerateButton = null;
+                lastClickHandler = null;
             }
         } catch (error) {
             console.error('Error monitoring custom voice summary dialog:', error);
