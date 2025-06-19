@@ -1,5 +1,18 @@
 # Changelog
 
+- 0.8.2 (2025/6/19)
+
+  - fix: 更新壓縮包內容，包含側邊面板相關檔案
+  - fix: 移除不必要的 Tailwind CSS 樣式表連結
+  - feat: 新增內容雜湊生成與重複檢查功能，優化儲存邏輯
+
+- 0.8.0 (2025/6/10)
+
+  - 新增側邊面板重新整理功能，支援從內容腳本發送重新整理請求
+  - 新增 VSCode 擴充建議，包含 PostCSS 與 Tailwind CSS 擴充套件
+  - 修正 Tailwind CSS 的設定檔並重新命名
+  - 隱藏「測試」按鈕
+
 - 0.7.0 (2025/1/8)
 
   - Add Custom Voice Summary Prompt Preservation feature
