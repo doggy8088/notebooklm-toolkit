@@ -797,11 +797,25 @@
         while (removeEmptyElements(clonedElement)) { }
 
         return clonedElement;
-    }
-
-    // Track if we've already added listener to avoid duplicates
+    }    // Track if we've already added listener to avoid duplicates
     let generateButtonListenerAdded = false;
     let lastGenerateButton = null;
+
+    // Throttling variables to prevent duplicate saves
+    let lastSaveTime = 0;
+    let lastSavedContent = '';
+
+    // Function to generate content hash for duplicate detection
+    function generateContentHash(content) {
+        let hash = 0;
+        if (content.length === 0) return hash;
+        for (let i = 0; i < content.length; i++) {
+            const char = content.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash.toString();
+    }
 
     function monitorCustomVoiceSummaryDialog() {
         try {
@@ -1005,18 +1019,28 @@
                     isNewButton,
                     generateButtonListenerAdded,
                     buttonIdentity: generateButton.outerHTML.substring(0, 100) + '...'
-                });
-
-                // Add click listener to the generate button using both click and mousedown for reliability
+                });                // Add click listener to the generate button using both click and mousedown for reliability
                 const clickHandler = async function (event) {
                     event.preventDefault();
+
                     try {
+                        const now = Date.now();
+                        const promptContent = episodeFocusTextarea.value?.trim();
+
+                        // 防止在 2 秒內重複儲存相同內容
+                        const timeSinceLastSave = now - lastSaveTime;
+                        const isSameContent = promptContent === lastSavedContent;
+                        const tooSoon = timeSinceLastSave < 2000; // 2 seconds
+
+                        if (isSameContent && tooSoon) {
+                            if (DEBUG) console.log('[DEBUG] ⏱️ Throttled: Same content saved too recently');
+                            return;
+                        }
+
                         if (DEBUG) console.log('[DEBUG] 🔥 Generate button clicked! Event type:', event.type);
                         if (DEBUG) console.log('[DEBUG] Button clicked:', this);
                         if (DEBUG) console.log('[DEBUG] Current textarea:', episodeFocusTextarea);
 
-                        // Get the current value from the textarea at click time
-                        const promptContent = episodeFocusTextarea.value?.trim();
                         if (DEBUG) console.log('[DEBUG] Textarea content at click time:', {
                             length: promptContent?.length || 0,
                             content: promptContent?.substring(0, 100) + '...'
@@ -1024,6 +1048,11 @@
 
                         if (promptContent && promptContent.length > 0) {
                             if (DEBUG) console.log('[DEBUG] 💾 Attempting to save prompt:', promptContent.substring(0, 50) + '...');
+
+                            // 更新節流變數
+                            lastSaveTime = now;
+                            lastSavedContent = promptContent;
+
                             await saveCustomPrompt(promptContent);
 
                             // Try to refresh sidePanel if it's already open
@@ -1051,6 +1080,12 @@
                         if (DEBUG) console.error('[DEBUG] ❌ Error handling generate button click:', error);
                     }
                 };
+
+                // 移除舊的監聽器（如果存在）
+                if (lastGenerateButton && lastGenerateButton !== generateButton) {
+                    lastGenerateButton.removeEventListener('click', clickHandler, { capture: true });
+                    lastGenerateButton.removeEventListener('mousedown', clickHandler, { capture: true });
+                }
 
                 // Add listeners for multiple event types to ensure we catch the click
                 generateButton.addEventListener('click', clickHandler, { capture: true });
@@ -1092,55 +1127,63 @@
             // Get notebook name and current URL
             const notebookName = getNotebookName();
             const currentUrl = window.location.href;
+            const contentHash = generateContentHash(content);
+            const now = Date.now();
+
             if (DEBUG) console.log('[DEBUG] Notebook name:', notebookName);
             if (DEBUG) console.log('[DEBUG] Current URL:', currentUrl);
+            if (DEBUG) console.log('[DEBUG] Content hash:', contentHash);
 
-            // Create new prompt object with additional information
-            const newPrompt = {
-                content: content,
-                timestamp: Date.now(),
-                notebookName: notebookName,
-                url: currentUrl
-            };
-            if (DEBUG) console.log('[DEBUG] Created new prompt object:', newPrompt);
+            // 檢查是否存在相同的內容雜湊值和筆記本名稱
+            const existingPrompt = prompts.find(p =>
+                p.contentHash === contentHash &&
+                p.notebookName === notebookName
+            );
 
-            // Check if the same prompt already exists (avoid duplicates)
-            const existingPrompt = prompts.find(p => p.content === content);
-            if (!existingPrompt) {
-                prompts.unshift(newPrompt); // Add to beginning of array
-                if (DEBUG) console.log('[DEBUG] Added new prompt, total count now:', prompts.length);
+            if (existingPrompt) {
+                // 更新現有提示的時間戳記而不是新增新的
+                existingPrompt.timestamp = now;
+                existingPrompt.url = currentUrl; // 更新 URL
 
-                // Keep only the most recent 50 prompts to avoid storage bloat
-                if (prompts.length > 50) {
-                    const removed = prompts.splice(50);
-                    if (DEBUG) console.log('[DEBUG] Removed', removed.length, 'old prompts to stay under limit');
-                }
+                // 將更新的提示移至陣列開頭
+                const index = prompts.indexOf(existingPrompt);
+                prompts.splice(index, 1);
+                prompts.unshift(existingPrompt);
 
-                // Save back to storage
                 await chrome.storage.local.set({ customPrompts: prompts });
-                if (DEBUG) console.log('[DEBUG] Saved prompts to storage successfully');
 
-                // Verify the save by reading it back
-                const verification = await chrome.storage.local.get(['customPrompts']);
-                if (DEBUG) console.log('[DEBUG] Verification - prompts now in storage:', verification.customPrompts?.length || 0);
+                if (DEBUG) console.log('[DEBUG] Updated existing prompt timestamp');
+                console.log('ℹ️ 提示已存在，更新時間戳記');
 
-                console.log('✅ Custom prompt saved successfully. Total prompts:', prompts.length);                // Send success notification
+                // 發送通知
                 try {
-                    const message = `${chrome.i18n.getMessage('custom_prompt_saved')} (${chrome.i18n.getMessage('prompts_count').replace('{count}', prompts.length)})`;
+                    const message = `${chrome.i18n.getMessage('custom_prompt_updated')} (${chrome.i18n.getMessage('prompts_count').replace('{count}', prompts.length)})`;
                     chrome.runtime.sendMessage({
                         type: 'showNotification',
                         message: message
                     });
                 } catch (msgError) {
-                    if (DEBUG) console.log('[DEBUG] Could not send success notification:', msgError);
+                    if (DEBUG) console.log('[DEBUG] Could not send update notification:', msgError);
                 }
 
-            } else {
-                if (DEBUG) console.log('[DEBUG] Prompt already exists, skipping duplicate save');
-                console.log('ℹ️ Prompt already exists, skipping duplicate save');
+                return;
             }
+
+            // 建立新的提示物件
+            const newPrompt = {
+                content: content,
+                contentHash: contentHash,
+                timestamp: now,
+                notebookName: notebookName,
+                url: currentUrl
+            };
+            if (DEBUG) console.log('[DEBUG] Created new prompt object:', newPrompt);
+
+            await save(prompts, newPrompt);
+
         } catch (error) {
-            console.error('❌ Error saving custom prompt:', error);            // Optionally show a user-friendly notification
+            console.error('❌ Error saving custom prompt:', error);
+            // Optionally show a user-friendly notification
             try {
                 chrome.runtime.sendMessage({
                     type: 'showNotification',
@@ -1149,6 +1192,38 @@
             } catch (msgError) {
                 // If messaging fails, that's okay - just log it
                 console.error('Failed to send error notification:', msgError);
+            }
+        }
+
+        async function save(prompts, newPrompt) {
+            prompts.unshift(newPrompt); // Add to beginning of array
+            if (DEBUG) console.log('[DEBUG] Added new prompt, total count now:', prompts.length);
+
+            // Keep only the most recent 50 prompts to avoid storage bloat
+            if (prompts.length > 50) {
+                const removed = prompts.splice(50);
+                if (DEBUG) console.log('[DEBUG] Removed', removed.length, 'old prompts to stay under limit');
+            }
+
+            // Save back to storage
+            await chrome.storage.local.set({ customPrompts: prompts });
+            if (DEBUG) console.log('[DEBUG] Saved prompts to storage successfully');
+
+            // Verify the save by reading it back
+            const verification = await chrome.storage.local.get(['customPrompts']);
+            if (DEBUG) console.log('[DEBUG] Verification - prompts now in storage:', verification.customPrompts?.length || 0);
+
+            if (DEBUG) console.log('✅ Custom prompt saved successfully. Total prompts:', prompts.length);
+
+            // Send success notification
+            try {
+                const message = `${chrome.i18n.getMessage('custom_prompt_saved')} (${chrome.i18n.getMessage('prompts_count').replace('{count}', prompts.length)})`;
+                chrome.runtime.sendMessage({
+                    type: 'showNotification',
+                    message: message
+                });
+            } catch (msgError) {
+                if (DEBUG) console.log('[DEBUG] Could not send success notification:', msgError);
             }
         }
     }
