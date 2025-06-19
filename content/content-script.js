@@ -1150,7 +1150,9 @@
                 const verification = await chrome.storage.local.get(['customPrompts']);
                 if (DEBUG) console.log('[DEBUG] Verification - prompts now in storage:', verification.customPrompts?.length || 0);
 
-                console.log('✅ Custom prompt saved successfully. Total prompts:', prompts.length);                // Send success notification
+                console.log('✅ Custom prompt saved successfully. Total prompts:', prompts.length);
+                
+                // Send success notification
                 try {
                     const message = `${chrome.i18n.getMessage('custom_prompt_saved')} (${chrome.i18n.getMessage('prompts_count').replace('{count}', prompts.length)})`;
                     chrome.runtime.sendMessage({
@@ -1166,7 +1168,9 @@
                 console.log('ℹ️ Prompt already exists, skipping duplicate save');
             }
         } catch (error) {
-            console.error('❌ Error saving custom prompt:', error);            // Optionally show a user-friendly notification
+            console.error('❌ Error saving custom prompt:', error);
+            
+            // Optionally show a user-friendly notification
             try {
                 chrome.runtime.sendMessage({
                     type: 'showNotification',
