@@ -6,7 +6,7 @@ Mejore su experiencia en el sitio web de NotebookLM con atajos de teclado, boton
 
 - Mapa mental
   - Agrega un botón en la esquina inferior derecha de los mapas mentales. Haga clic para expandir todos los nodos.
-  - Presione el atajo `Ctrl+Alt+A` para expandir rápidamente todos los nodos del mapa mental de una vez.
+  - Presione el atajo `Ctrl+Alt+A` (Windows/Linux) o `Cmd+Alt+A` (Mac) para expandir rápidamente todos los nodos del mapa mental de una vez.
 
 - Notas
   - Agrega un botón en la página de notas de NotebookLM para copiar rápidamente el contenido completo de la nota.

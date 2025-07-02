@@ -6,7 +6,7 @@ Améliorez votre expérience du site NotebookLM avec des raccourcis clavier, des
 
 - Carte mentale
   - Ajoute un bouton dans le coin inférieur droit des cartes mentales. Cliquez pour développer tous les nœuds.
-  - Appuyez sur le raccourci `Ctrl+Alt+A` pour développer rapidement tous les nœuds de la carte mentale en une fois.
+  - Appuyez sur le raccourci `Ctrl+Alt+A` (Windows/Linux) ou `Cmd+Alt+A` (Mac) pour développer rapidement tous les nœuds de la carte mentale en une fois.
 
 - Notes
   - Ajoute un bouton sur la page des notes de NotebookLM pour copier rapidement le contenu complet de la note.

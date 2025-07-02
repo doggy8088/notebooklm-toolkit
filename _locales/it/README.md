@@ -6,7 +6,7 @@ Migliora la tua esperienza sul sito NotebookLM con scorciatoie da tastiera, puls
 
 - Mappa mentale
   - Aggiunge un pulsante nell'angolo in basso a destra delle mappe mentali. Clicca per espandere tutti i nodi.
-  - Premi la scorciatoia `Ctrl+Alt+A` per espandere rapidamente tutti i nodi della mappa mentale in una volta.
+  - Premi la scorciatoia `Ctrl+Alt+A` (Windows/Linux) o `Cmd+Alt+A` (Mac) per espandere rapidamente tutti i nodi della mappa mentale in una volta.
 
 - Note
   - Aggiunge un pulsante nella pagina delle note di NotebookLM per copiare rapidamente il contenuto completo della nota.
