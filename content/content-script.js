@@ -4,7 +4,6 @@
     const DEBUG = false;
 
     const hotkeyHandlers = [
-        { test: matchHotkey({ ctrl: true, alt: true }, 'a'), handler: handleCtrlAltA },
         { test: matchHotkey({ ctrl: true, alt: true }, 'b'), handler: handleCtrlAltB },
     ];
 
@@ -198,32 +197,6 @@
             };
         }
         data; // Return the data object
-    }
-
-    async function handleCtrlAltA() {
-        const svgElement = findMindMapSvg();
-        if (!svgElement) return;
-
-        let found;
-        do {
-            found = false;
-            const gNodes = svgElement.querySelectorAll('g.node');
-            gNodes.forEach(gNode => {
-                const textNode = gNode.querySelector('text');
-                if (textNode && textNode.textContent === '>') {
-                    const circleNode = gNode.querySelector('circle');
-                    if (circleNode) {
-                        circleNode.dispatchEvent(new MouseEvent('click', {
-                            bubbles: true,
-                            cancelable: true
-                        }));
-                        found = true;
-                    }
-                }
-            });
-            // 等待 DOM 更新
-            if (found) await delay(100);
-        } while (found);
     }
 
     async function handleCtrlAltB() {
