@@ -157,13 +157,25 @@
 
                 const matIconElement = clonedButton.querySelector('mat-icon');
                 if (matIconElement) {
-                    // https://marella.github.io/material-icons/demo/
-                    matIconElement.textContent = 'content_copy';
-                    matIconElement.title = chrome.i18n.getMessage('copy_mindmap_content');
-                    data = {
-                        success: true,
-                        message: 'Button cloned and inserted successfully, mat-icon text updated.'
-                    };
+
+                    if (matIconElement.textContent === 'content_copy') {
+                        // If the text content is already set to 'content_copy', we can skip updating it
+                        // This avoids unnecessary changes if the button is already set up correctly
+                        data = {
+                            success: false,
+                            message: 'Button cloned and inserted successfully, no need to update mat-icon text.'
+                        };
+                        return;
+                    } else {
+                        // https://marella.github.io/material-icons/demo/
+                        matIconElement.textContent = 'content_copy';
+                        matIconElement.title = chrome.i18n.getMessage('copy_mindmap_content');
+                        data = {
+                            success: true,
+                            message: 'Button cloned and inserted successfully, mat-icon text updated.'
+                        };
+                    }
+
                 } else {
                     const iconTextSpan = clonedButton.querySelector('.mat-icon');
                     if (iconTextSpan) {
