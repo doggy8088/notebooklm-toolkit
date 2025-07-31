@@ -4,28 +4,15 @@
     const DEBUG = false;
 
     const hotkeyHandlers = [
-        { test: matchHotkey({ ctrl: true, alt: true }, 'a'), handler: handleCtrlAltA },
         { test: matchHotkey({ ctrl: true, alt: true }, 'b'), handler: handleCtrlAltB },
     ];
 
-    let clonedButton = null;
-    async function ToggleAllNodesButton() {
-        const result = await InsertToggleAllNodesButton();
-        if (result.success) {
-            const zoomActionsDiv = document.querySelector('div.zoom-actions');
-            if (zoomActionsDiv) {
-                clonedButton = zoomActionsDiv.querySelector('button[data-open-all-btn]')?.closest('button');
-            }
-        }
-    }
+
 
     setInterval(async () => {
         const svg = findMindMapSvg();
         if (svg) {
-            if (!clonedButton || !document.body.contains(clonedButton)) {
-                await ToggleAllNodesButton();
-                await insertDownloadMarkdownButton(svg);
-            }
+            await insertDownloadMarkdownButton(svg);
         }
 
         // Check for custom voice summary dialog and add event listener
@@ -105,55 +92,7 @@
         }
     }, 1000);
 
-    async function InsertToggleAllNodesButton() {
-        const zoomActionsDiv = document.querySelector('div.zoom-actions');
-        if (zoomActionsDiv) {
-            const buttons = zoomActionsDiv.querySelectorAll('button');
-            if (buttons.length >= 2) {
-                const firstButton = buttons[0];
-                const secondButton = buttons[1];
-                const clonedButton = firstButton.cloneNode(true); // 複製含子元素
 
-                // 設定 data- 屬性標記這個複製的按鈕
-                clonedButton.setAttribute('data-open-all-btn', 'true');
-
-                // 修改複製按鈕內的 icon
-                const iconElement = clonedButton.querySelector('mat-icon, i');
-                if (iconElement) {
-                    iconElement.textContent = 'open_with';
-                } else {
-                    if (clonedButton.firstElementChild) {
-                        clonedButton.firstElementChild.textContent = 'open_with';
-                    }
-                }
-
-                // 綁定 click 事件
-                clonedButton.addEventListener('click', handleCtrlAltA);
-
-                // 插入複製按鈕到第一、二個按鈕之間
-                secondButton.parentNode.insertBefore(clonedButton, secondButton);
-
-                const data = {
-                    success: true,
-                    message: '按鈕複製並插入成功。',
-                    clonedButtonHTML: clonedButton.outerHTML
-                };
-                return data;
-            } else {
-                const data = {
-                    success: false,
-                    message: `在 .zoom-actions 內找到 ${buttons.length} 個按鈕，預期至少 2 個。`
-                };
-                return data;
-            }
-        } else {
-            const data = {
-                success: false,
-                message: '找不到 class 為 "zoom-actions" 的 div。'
-            };
-            return data;
-        }
-    }
 
     function findMindMapSvg(event) {
         const svgs = document.querySelectorAll('svg');
@@ -218,13 +157,25 @@
 
                 const matIconElement = clonedButton.querySelector('mat-icon');
                 if (matIconElement) {
-                    // https://marella.github.io/material-icons/demo/
-                    matIconElement.textContent = 'content_copy';
-                    matIconElement.title = chrome.i18n.getMessage('copy_mindmap_content');
-                    data = {
-                        success: true,
-                        message: 'Button cloned and inserted successfully, mat-icon text updated.'
-                    };
+
+                    if (matIconElement.textContent === 'content_copy') {
+                        // If the text content is already set to 'content_copy', we can skip updating it
+                        // This avoids unnecessary changes if the button is already set up correctly
+                        data = {
+                            success: false,
+                            message: 'Button cloned and inserted successfully, no need to update mat-icon text.'
+                        };
+                        return;
+                    } else {
+                        // https://marella.github.io/material-icons/demo/
+                        matIconElement.textContent = 'content_copy';
+                        matIconElement.title = chrome.i18n.getMessage('copy_mindmap_content');
+                        data = {
+                            success: true,
+                            message: 'Button cloned and inserted successfully, mat-icon text updated.'
+                        };
+                    }
+
                 } else {
                     const iconTextSpan = clonedButton.querySelector('.mat-icon');
                     if (iconTextSpan) {
@@ -258,32 +209,6 @@
             };
         }
         data; // Return the data object
-    }
-
-    async function handleCtrlAltA() {
-        const svgElement = findMindMapSvg();
-        if (!svgElement) return;
-
-        let found;
-        do {
-            found = false;
-            const gNodes = svgElement.querySelectorAll('g.node');
-            gNodes.forEach(gNode => {
-                const textNode = gNode.querySelector('text');
-                if (textNode && textNode.textContent === '>') {
-                    const circleNode = gNode.querySelector('circle');
-                    if (circleNode) {
-                        circleNode.dispatchEvent(new MouseEvent('click', {
-                            bubbles: true,
-                            cancelable: true
-                        }));
-                        found = true;
-                    }
-                }
-            });
-            // 等待 DOM 更新
-            if (found) await delay(100);
-        } while (found);
     }
 
     async function handleCtrlAltB() {
