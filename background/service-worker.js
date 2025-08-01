@@ -1,8 +1,7 @@
 const DEFAULT_URL = "https://notebooklm.google.com/";
 
 chrome.action.onClicked.addListener((tab) => {
-  chrome.tabs.create({ url: DEFAULT_URL });
-  // chrome.sidePanel.open({ tabId: tab.id });
+  chrome.sidePanel.open({ tabId: tab.id });
 });
 
 chrome.runtime.onInstalled.addListener(() => {
