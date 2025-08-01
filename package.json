@@ -1,6 +1,6 @@
 {
   "name": "notebooklm-toolkit",
-  "version": "1.0.0",
+  "version": "0.10.0",
   "description": "提升 NotebookLM 網站的使用體驗，提供快速鍵、增強按鈕與快速開啟 NotebookLM 網站的按鈕。",
   "main": "index.js",
   "scripts": {
