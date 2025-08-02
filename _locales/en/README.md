@@ -5,8 +5,7 @@ Enhance your NotebookLM website experience with keyboard shortcuts, enhanced but
 ## Features
 
 - Mind Map
-  - Adds a button in the bottom-right corner of mind maps. Click to expand all nodes.
-  - Press `Ctrl+Alt+A` shortcut to quickly expand all mind map nodes at once.
+  - Provides a "Copy" button that allows you to copy all expanded node text in Markdown format.
 
 - Notes
   - Adds a button on the NotebookLM notes page to quickly copy the complete note content.

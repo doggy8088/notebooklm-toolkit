@@ -5,8 +5,7 @@ Verbessern Sie Ihr NotebookLM-Website-Erlebnis mit Tastenkombinationen, erweiter
 ## Funktionen
 
 - Mind Map
-  - Fügt eine Schaltfläche in der unteren rechten Ecke von Mind Maps hinzu. Klicken Sie, um alle Knoten zu erweitern.
-  - Drücken Sie die Tastenkombination `Ctrl+Alt+A`, um alle Mind Map-Knoten auf einmal schnell zu erweitern.
+  - Bietet eine „Kopieren"-Schaltfläche, mit der Sie alle erweiterten Knotentexte im Markdown-Format kopieren können.
 
 - Notizen
   - Fügt eine Schaltfläche auf der NotebookLM-Notizenseite hinzu, um den vollständigen Notizinhalt schnell zu kopieren.

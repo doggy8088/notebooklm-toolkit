@@ -5,8 +5,7 @@ Mejore su experiencia en el sitio web de NotebookLM con atajos de teclado, boton
 ## Características
 
 - Mapa mental
-  - Agrega un botón en la esquina inferior derecha de los mapas mentales. Haga clic para expandir todos los nodos.
-  - Presione el atajo `Ctrl+Alt+A` para expandir rápidamente todos los nodos del mapa mental de una vez.
+  - Proporciona un botón "Copiar" que permite copiar todo el texto de los nodos expandidos en formato Markdown.
 
 - Notas
   - Agrega un botón en la página de notas de NotebookLM para copiar rápidamente el contenido completo de la nota.
