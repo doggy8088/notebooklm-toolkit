@@ -15,7 +15,7 @@
         "message": "Copiar contenido del mapa mental"
     },
     "query_custom_prompts": {
-        "message": "Registros de indicaciones personalizadas para resumen de audio"
+        "message": "Registros de indicaciones personalizadas"
     },
     "confirm_clear_all_prompts": {
         "message": "¿Está seguro de que desea borrar todas las indicaciones？"
@@ -45,7 +45,7 @@
         "message": "Eliminar indicación"
     },
     "custom_audio_overview_prompt_records": {
-        "message": "Registros de indicaciones de resumen de voz personalizado"
+        "message": "Registros de indicaciones personalizadas"
     },
     "refresh": {
         "message": "Actualizar"
@@ -79,5 +79,8 @@
     },
     "view_manage_saved_prompts": {
         "message": "Vea y gestione todas sus indicaciones personalizadas guardadas aquí."
+    },
+    "apply_prompt_to_input": {
+        "message": "Rellenar en el campo de NotebookLM"
     }
 }

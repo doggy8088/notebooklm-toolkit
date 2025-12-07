@@ -15,7 +15,7 @@
         "message": "Copy Mindmap Content"
     },
     "query_custom_prompts": {
-        "message": "Custom Prompt Records for Audio Overview"
+        "message": "Custom Prompt Records"
     },
     "confirm_clear_all_prompts": {
         "message": "Are you sure you want to clear all prompts?"
@@ -45,7 +45,7 @@
         "message": "Delete Prompt"
     },
     "custom_audio_overview_prompt_records": {
-        "message": "Custom Audio Overview Prompt Records"
+        "message": "Custom Prompt Records"
     },
     "refresh": {
         "message": "Refresh"
@@ -79,5 +79,8 @@
     },
     "view_manage_saved_prompts": {
         "message": "View and manage all your saved custom prompts here."
+    },
+    "apply_prompt_to_input": {
+        "message": "Fill into NotebookLM input"
     }
 }

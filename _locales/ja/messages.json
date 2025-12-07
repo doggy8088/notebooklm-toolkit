@@ -15,7 +15,7 @@
         "message": "マインドマップの内容をコピー"
     },
     "query_custom_prompts": {
-        "message": "音声要約のカスタムプロンプト記録"
+        "message": "カスタムプロンプト記録"
     },
     "confirm_clear_all_prompts": {
         "message": "すべてのプロンプトをクリアしてもよろしいですか？"
@@ -45,7 +45,7 @@
         "message": "プロンプトを削除"
     },
     "custom_audio_overview_prompt_records": {
-        "message": "カスタム音声要約プロンプト記録"
+        "message": "カスタムプロンプト記録"
     },
     "refresh": {
         "message": "更新"
@@ -78,5 +78,8 @@
     },
     "view_manage_saved_prompts": {
         "message": "保存されたすべてのカスタムプロンプトをここで表示・管理できます。"
+    },
+    "apply_prompt_to_input": {
+        "message": "NotebookLM の入力欄に反映"
     }
 }

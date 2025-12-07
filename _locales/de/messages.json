@@ -15,7 +15,7 @@
         "message": "Gedankenkarten-Inhalt kopieren"
     },
     "query_custom_prompts": {
-        "message": "Benutzerdefinierte Prompt-Aufzeichnungen für Sprachzusammenfassungen"
+        "message": "Benutzerdefinierte Prompt-Aufzeichnungen"
     },
     "confirm_clear_all_prompts": {
         "message": "Sind Sie sicher, dass Sie alle Prompts löschen möchten？"
@@ -45,7 +45,7 @@
         "message": "Prompt löschen"
     },
     "custom_audio_overview_prompt_records": {
-        "message": "Benutzerdefinierte Sprachzusammenfassung Prompt-Aufzeichnungen"
+        "message": "Benutzerdefinierte Prompt-Aufzeichnungen"
     },
     "refresh": {
         "message": "Aktualisieren"
@@ -79,5 +79,8 @@
     },
     "view_manage_saved_prompts": {
         "message": "Hier können Sie alle Ihre gespeicherten benutzerdefinierten Prompts anzeigen und verwalten."
+    },
+    "apply_prompt_to_input": {
+        "message": "In NotebookLM-Eingabe einsetzen"
     }
 }

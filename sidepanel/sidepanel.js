@@ -1,4 +1,7 @@
 const DEBUG = false;
+let currentPrompts = [];
+let canApplyToTextarea = false;
+let isRenderingPrompts = false;
 
 // sidepanel.js
 document.addEventListener('DOMContentLoaded', function () {
@@ -19,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (message.type === 'refreshSidePanelData') {
             if (DEBUG) console.log('[DEBUG] 🔄 Received refresh message, reloading prompts...');
             loadPrompts();
+        } else if (message.type === 'episodeTextareaAvailability') {
+            if (DEBUG) console.log('[DEBUG] 🎯 Received textarea availability:', message.available);
+            if (message.available !== canApplyToTextarea) {
+                canApplyToTextarea = !!message.available;
+                renderPrompts();
+            }
         }
     });
 });
@@ -68,14 +77,30 @@ async function loadPrompts() {
         if (DEBUG) console.log('[DEBUG] Loading prompts from storage...');
         const result = await chrome.storage.local.get(['customPrompts']);
         const prompts = result.customPrompts || [];
+        currentPrompts = prompts;
+        canApplyToTextarea = await checkEpisodeTextareaAvailability();
         if (DEBUG) console.log('[DEBUG] Retrieved prompts:', prompts);
+        if (DEBUG) console.log('[DEBUG] Can apply to textarea:', canApplyToTextarea);
 
+        renderPrompts();
+    } catch (error) {
+        if (DEBUG) console.error('[DEBUG] Error loading prompts:', error);
+    }
+}
+
+function renderPrompts() {
+    if (isRenderingPrompts) return;
+    isRenderingPrompts = true;
+
+    try {
         const container = document.getElementById('prompts-container');
         const emptyState = document.getElementById('empty-state');
         if (DEBUG) console.log('[DEBUG] Container element:', container);
         if (DEBUG) console.log('[DEBUG] Empty state element:', emptyState);
         if (DEBUG) console.log('[DEBUG] Empty state classes before:', emptyState?.className);
         if (DEBUG) console.log('[DEBUG] Empty state display before:', emptyState?.style.display);
+
+        const prompts = currentPrompts || [];
 
         if (prompts.length === 0) {
             if (DEBUG) console.log('[DEBUG] No prompts found, showing empty state');
@@ -91,7 +116,7 @@ async function loadPrompts() {
             if (DEBUG) console.log('[DEBUG] Found', prompts.length, 'prompts, displaying them');
             if (container) {
                 container.style.display = 'block';
-                container.innerHTML = createPromptsCards(prompts);
+                container.innerHTML = createPromptsCards(prompts, canApplyToTextarea);
             } if (emptyState) {
                 emptyState.classList.add('hidden');
                 emptyState.style.display = 'none';
@@ -100,20 +125,20 @@ async function loadPrompts() {
 
         if (DEBUG) console.log('[DEBUG] Empty state classes after:', emptyState?.className);
         if (DEBUG) console.log('[DEBUG] Empty state display after:', emptyState?.style.display);
-    } catch (error) {
-        if (DEBUG) console.error('[DEBUG] Error loading prompts:', error);
+    } finally {
+        isRenderingPrompts = false;
     }
 }
 
-function createPromptsCards(prompts) {
+function createPromptsCards(prompts, canApply) {
     return `
         <div class="space-y-6 p-2">
-            ${prompts.map((prompt, index) => createPromptCard(prompt, index)).join('')}
+            ${prompts.map((prompt, index) => createPromptCard(prompt, index, canApply)).join('')}
         </div>
     `;
 }
 
-function createPromptCard(prompt, index) {
+function createPromptCard(prompt, index, canApply) {
     const date = new Date(prompt.timestamp).toLocaleString('zh-TW', {
         year: 'numeric',
         month: '2-digit',
@@ -127,6 +152,8 @@ function createPromptCard(prompt, index) {
         : prompt.content;    // Get title and URL for display
     const title = prompt.notebookName || chrome.i18n.getMessage('custom_prompt_content');
     const hasUrl = prompt.url && prompt.url !== '';
+    const applyDisabledClass = canApply ? '' : 'opacity-60 cursor-not-allowed';
+    const applyDisabledAttr = canApply ? '' : 'disabled';
 
     return `
         <div class="bg-white p-6 rounded-lg border border-gray-200 relative hover:shadow-md transition-shadow duration-200 prompt-card" data-index="${index}">
@@ -156,17 +183,31 @@ function createPromptCard(prompt, index) {
                 `}
             </div>
 
+            <!-- 填入 NotebookLM 按鈕 -->
+            <div class="mb-4">
+                <button class="apply-prompt-btn inline-flex items-center px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors duration-200 text-sm font-medium shadow-sm disabled:bg-emerald-400 ${applyDisabledClass}"
+                        data-index="${index}"
+                        aria-label="${chrome.i18n.getMessage('apply_prompt_to_input')}"
+                        ${applyDisabledAttr}>
+                    <span class="material-icons text-sm mr-1">input</span>
+                    <span>${chrome.i18n.getMessage('apply_prompt_to_input')}</span>
+                </button>
+            </div>
+
             <!-- 提示內容 -->
             <div class="prompt-content text-gray-600 whitespace-pre-wrap break-words leading-relaxed">${escapeHtml(truncatedContent)}</div>
 
-            <!-- 展開按鈕 -->            ${prompt.content.length > 150 ? `
-                <button class="expand-btn text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1 mt-3 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-all duration-200"
-                        data-index="${index}"
-                        aria-label="${chrome.i18n.getMessage('show_full_content')}">
-                    <span class="material-icons text-sm">expand_more</span>
-                    <span>${chrome.i18n.getMessage('expand')}</span>
-                </button>
-            ` : ''}
+            <!-- 卡片動作 -->
+            <div class="flex flex-wrap gap-2 mt-4">
+                ${prompt.content.length > 150 ? `
+                    <button class="expand-btn text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-all duration-200"
+                            data-index="${index}"
+                            aria-label="${chrome.i18n.getMessage('show_full_content')}">
+                        <span class="material-icons text-sm">expand_more</span>
+                        <span>${chrome.i18n.getMessage('expand')}</span>
+                    </button>
+                ` : ''}
+            </div>
         </div>
     `;
 }
@@ -217,6 +258,9 @@ document.addEventListener('click', async function (e) {
     } else if (e.target.closest('.expand-btn')) {
         const index = parseInt(e.target.closest('.expand-btn').dataset.index);
         await expandPrompt(index);
+    } else if (e.target.closest('.apply-prompt-btn')) {
+        const index = parseInt(e.target.closest('.apply-prompt-btn').dataset.index);
+        await applyPromptToTextarea(index);
     }
 });
 
@@ -262,5 +306,39 @@ async function expandPrompt(index) {
         }
     } catch (error) {
         console.error('Error expanding prompt:', error);
+    }
+}
+
+async function applyPromptToTextarea(index) {
+    try {
+        if (!canApplyToTextarea) return;
+        const prompt = currentPrompts[index];
+        if (!prompt) return;
+
+        const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!activeTab?.id) return;
+
+        const response = await chrome.tabs.sendMessage(activeTab.id, {
+            type: 'applyPromptToEpisodeTextarea',
+            content: prompt.content
+        });
+
+    } catch (error) {
+        console.error('Error applying prompt to textarea:', error);
+    }
+}
+
+async function checkEpisodeTextareaAvailability() {
+    try {
+        const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!activeTab?.id) return false;
+
+        const response = await chrome.tabs.sendMessage(activeTab.id, {
+            type: 'checkEpisodeTextareaAvailable'
+        });
+        return !!response?.success && !!response.available;
+    } catch (error) {
+        if (DEBUG) console.warn('Unable to check textarea availability:', error);
+        return false;
     }
 }

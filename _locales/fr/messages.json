@@ -15,7 +15,7 @@
         "message": "Copier le contenu de la carte mentale"
     },
     "query_custom_prompts": {
-        "message": "Enregistrements d'invites personnalisées pour résumé audio"
+        "message": "Historique des invites personnalisées"
     },
     "confirm_clear_all_prompts": {
         "message": "Êtes-vous sûr de vouloir effacer toutes les invites？"
@@ -45,7 +45,7 @@
         "message": "Supprimer l'invite"
     },
     "custom_audio_overview_prompt_records": {
-        "message": "Enregistrements d'invites de résumé vocal personnalisé"
+        "message": "Historique des invites personnalisées"
     },
     "refresh": {
         "message": "Actualiser"
@@ -79,5 +79,8 @@
     },
     "view_manage_saved_prompts": {
         "message": "Consultez et gérez toutes vos invites personnalisées sauvegardées ici."
+    },
+    "apply_prompt_to_input": {
+        "message": "Remplir le champ NotebookLM"
     }
 }
