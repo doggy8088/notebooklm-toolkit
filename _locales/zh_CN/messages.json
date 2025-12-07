@@ -15,7 +15,7 @@
         "message": "复制思维导图内容"
     },
     "query_custom_prompts": {
-        "message": "语音摘要的自定义提示记录"
+        "message": "自定义提示记录"
     },
     "confirm_clear_all_prompts": {
         "message": "确定要清空所有提示吗？"
@@ -45,7 +45,7 @@
         "message": "删除提示"
     },
     "custom_audio_overview_prompt_records": {
-        "message": "自定义语音摘要提示记录"
+        "message": "自定义提示记录"
     },
     "refresh": {
         "message": "刷新"
@@ -79,5 +79,8 @@
     },
     "view_manage_saved_prompts": {
         "message": "在此处查看和管理您所有已保存的自定义提示。"
+    },
+    "apply_prompt_to_input": {
+        "message": "填入 NotebookLM 输入框"
     }
 }

@@ -15,7 +15,7 @@
         "message": "마인드맵 내용 복사"
     },
     "query_custom_prompts": {
-        "message": "음성 요약의 맞춤 프롬프트 기록"
+        "message": "맞춤 프롬프트 기록"
     },
     "confirm_clear_all_prompts": {
         "message": "모든 프롬프트를 지우시겠습니까？"
@@ -45,7 +45,7 @@
         "message": "프롬프트 삭제"
     },
     "custom_audio_overview_prompt_records": {
-        "message": "맞춤 음성 요약 프롬프트 기록"
+        "message": "맞춤 프롬프트 기록"
     },
     "refresh": {
         "message": "새로고침"
@@ -79,5 +79,8 @@
     },
     "view_manage_saved_prompts": {
         "message": "저장된 모든 맞춤 프롬프트를 여기서 보고 관리하세요."
+    },
+    "apply_prompt_to_input": {
+        "message": "NotebookLM 입력란에 채우기"
     }
 }

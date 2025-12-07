@@ -15,7 +15,7 @@
         "message": "複製心智圖內容"
     },
     "query_custom_prompts": {
-        "message": "語音摘要的自訂提示記錄"
+        "message": "自訂提示記錄"
     },
     "confirm_clear_all_prompts": {
         "message": "確定要清空所有提示嗎？"
@@ -45,7 +45,7 @@
         "message": "刪除提示"
     },
     "custom_audio_overview_prompt_records": {
-        "message": "語音摘要自訂提示記錄"
+        "message": "自訂提示記錄"
     },
     "refresh": {
         "message": "重新整理"
@@ -79,5 +79,8 @@
     },
     "view_manage_saved_prompts": {
         "message": "在此處查看和管理您所有已保存的自訂提示。"
+    },
+    "apply_prompt_to_input": {
+        "message": "填入 NotebookLM 輸入框"
     }
 }

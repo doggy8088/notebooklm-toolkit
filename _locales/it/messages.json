@@ -15,7 +15,7 @@
         "message": "Copia Contenuto Mappa Mentale"
     },
     "query_custom_prompts": {
-        "message": "Registri Prompt Personalizzati per Panoramica Audio"
+        "message": "Registro dei prompt personalizzati"
     },
     "confirm_clear_all_prompts": {
         "message": "Sei sicuro di voler cancellare tutti i prompt?"
@@ -45,7 +45,7 @@
         "message": "Elimina Prompt"
     },
     "custom_audio_overview_prompt_records": {
-        "message": "Registri Prompt Panoramica Audio Personalizzati"
+        "message": "Registro dei prompt personalizzati"
     },
     "refresh": {
         "message": "Aggiorna"
@@ -79,5 +79,8 @@
     },
     "view_manage_saved_prompts": {
         "message": "Visualizza e gestisci tutti i tuoi prompt personalizzati salvati qui."
+    },
+    "apply_prompt_to_input": {
+        "message": "Compila nel campo di NotebookLM"
     }
 }

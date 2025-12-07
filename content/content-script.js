@@ -7,6 +7,25 @@
         { test: matchHotkey({ ctrl: true, alt: true }, 'b'), handler: handleCtrlAltB },
     ];
 
+    function findEpisodeFocusTextarea(root) {
+        const scope = root || document;
+        const dialog = scope.matches?.('configurable-form-dialog, artifact-customization-dialog')
+            ? scope
+            : scope.querySelector?.('configurable-form-dialog') ||
+            scope.querySelector?.('artifact-customization-dialog');
+        if (!dialog) return null;
+
+        const textareas = dialog.querySelectorAll('textarea');
+        if (!textareas.length) return null;
+
+        const filled = Array.from(textareas).filter(ta => ta.value && ta.value.trim().length > 0);
+        if (filled.length > 0) {
+            return filled[filled.length - 1];
+        }
+
+        return textareas[textareas.length - 1];
+    }
+
 
 
     setInterval(async () => {
@@ -727,6 +746,7 @@
     // Throttling variables to prevent duplicate saves
     let lastSaveTime = 0;
     let lastSavedContent = '';
+    let lastEpisodeTextareaAvailable = null;
 
     // Function to generate content hash for duplicate detection
     function generateContentHash(content) {
@@ -745,24 +765,24 @@
             // add: artifact-customization-dialog
             var dialog = document.querySelector('configurable-form-dialog') || document.querySelector('artifact-customization-dialog');
             if (!dialog) {
+                notifyTextareaAvailability(false);
                 return;
             }
 
             if (DEBUG) console.log('[DEBUG] Scanning page for textareas and buttons within dialog:', dialog);
 
-            const allTextareas = dialog.querySelectorAll('textarea');
             const allButtons = dialog.querySelectorAll('button');
 
             // Look for the custom dialog with multiple detection strategies
             let generateButton = null;
 
-            const relevantTextareas = Array.from(allTextareas).filter(ta => ta.value && ta.value.trim().length > 0);
-            const episodeFocusTextarea = relevantTextareas.length > 0 ? relevantTextareas[relevantTextareas.length - 1] : null;
-            if (DEBUG && episodeFocusTextarea) console.log('[DEBUG] Selected last non-empty textarea in dialog:', {
+            const episodeFocusTextarea = findEpisodeFocusTextarea(dialog);
+            if (DEBUG && episodeFocusTextarea) console.log('[DEBUG] Selected textarea in dialog:', {
                 id: episodeFocusTextarea.getAttribute('id'),
                 placeholder: episodeFocusTextarea.placeholder,
                 value: episodeFocusTextarea.value
             });
+            notifyTextareaAvailability(!!episodeFocusTextarea);
 
             // Gather potential generate buttons and pick the last one if multiple found
             const potentialGenerateButtons = Array.from(allButtons).filter(btn => {
@@ -793,9 +813,7 @@
                     try {
                         // Find the active dialog and the current textarea when the event fires (not when handler was attached)
                         const parentDialog = event.target.closest('configurable-form-dialog, artifact-customization-dialog') || dialog;
-                        const textareasNow = parentDialog ? parentDialog.querySelectorAll('textarea') : [];
-                        const relevantNow = Array.from(textareasNow).filter(ta => ta.value && ta.value.trim().length > 0);
-                        const episodeFocusTextareaNow = relevantNow.length > 0 ? relevantNow[relevantNow.length - 1] : null;
+                        const episodeFocusTextareaNow = findEpisodeFocusTextarea(parentDialog);
 
                         const now = Date.now();
                         const promptContent = episodeFocusTextareaNow?.value?.trim();
@@ -862,6 +880,7 @@
                 if (DEBUG) console.log('[DEBUG] ✅ Custom dialog listener added successfully');
             }
         } catch (error) {
+            notifyTextareaAvailability(false);
             console.error('Error monitoring custom dialog:', error);
         }
     }
@@ -982,6 +1001,39 @@
             } catch (msgError) {
                 if (DEBUG) console.log('[DEBUG] Could not send success notification:', msgError);
             }
+        }
+    }
+
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.type === 'applyPromptToEpisodeTextarea') {
+            const targetTextarea = findEpisodeFocusTextarea();
+
+            if (targetTextarea) {
+                targetTextarea.focus();
+                targetTextarea.value = message.content || '';
+                targetTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                targetTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+                sendResponse({ success: true });
+            } else {
+                sendResponse({ success: false, error: 'textarea_not_found' });
+            }
+        }
+        if (message.type === 'checkEpisodeTextareaAvailable') {
+            const textarea = findEpisodeFocusTextarea();
+            sendResponse({ success: true, available: !!textarea });
+        }
+    });
+
+    function notifyTextareaAvailability(isAvailable) {
+        if (lastEpisodeTextareaAvailable === isAvailable) return;
+        lastEpisodeTextareaAvailable = isAvailable;
+        try {
+            chrome.runtime.sendMessage({
+                type: 'episodeTextareaAvailability',
+                available: isAvailable
+            });
+        } catch (e) {
+            // ignore; sidepanel may not be open
         }
     }
 
