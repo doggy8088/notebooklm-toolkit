@@ -15,7 +15,7 @@
             await insertDownloadMarkdownButton(svg);
         }
 
-        // Check for custom voice summary dialog and add event listener
+        // Check for custom dialog and add event listener
         monitorCustomVoiceSummaryDialog();
 
         const divPanelFooter = findPanelFooter();
@@ -722,9 +722,7 @@
         while (removeEmptyElements(clonedElement)) { }
 
         return clonedElement;
-    }    // Track if we've already added listener to avoid duplicates
-    let generateButtonListenerAdded = false;
-    let lastGenerateButton = null;
+    }
 
     // Throttling variables to prevent duplicate saves
     let lastSaveTime = 0;
@@ -744,213 +742,63 @@
 
     function monitorCustomVoiceSummaryDialog() {
         try {
-            // Debug: Log all available elements periodically for troubleshooting
-            if (Math.random() < 0.05) { // Reduced frequency to avoid spam
-                const allTextareas = document.querySelectorAll('textarea');
-                const allButtons = document.querySelectorAll('button');
-                if (DEBUG) console.log(`[DEBUG] Page scan: ${allTextareas.length} textareas, ${allButtons.length} buttons`);
-
-                // Log textareas with their attributes to help understand the structure
-                allTextareas.forEach((ta, index) => {
-                    if (ta.value && ta.value.trim().length > 10) { // Only log textareas with meaningful content
-                        if (DEBUG) console.log(`[DEBUG] Textarea ${index}:`, {
-                            placeholder: ta.placeholder,
-                            formControlName: ta.getAttribute('formcontrolname'),
-                            className: ta.className,
-                            value: ta.value.substring(0, 50) + '...'
-                        });
-                    }
-                });
-
-                // Log buttons that might be generate buttons
-                allButtons.forEach((btn, index) => {
-                    const text = btn.textContent?.trim();
-                    if (text && (text === '生成' || text === 'Generate' || text.includes('生成') || text.includes('Generate'))) {
-                        if (DEBUG) console.log(`[DEBUG] Potential generate button ${index}:`, {
-                            text: text,
-                            className: btn.className,
-                            type: btn.type,
-                            outerHTML: btn.outerHTML.substring(0, 100) + '...'
-                        });
-                    }
-                });
+            // add: artifact-customization-dialog
+            var dialog = document.querySelector('configurable-form-dialog') || document.querySelector('artifact-customization-dialog');
+            if (!dialog) {
+                return;
             }
 
-            // Look for the custom voice summary dialog with multiple detection strategies
+            if (DEBUG) console.log('[DEBUG] Scanning page for textareas and buttons within dialog:', dialog);
+
+            const allTextareas = dialog.querySelectorAll('textarea');
+            const allButtons = dialog.querySelectorAll('button');
+
+            // Look for the custom dialog with multiple detection strategies
             let generateButton = null;
-            let episodeFocusTextarea = null;
 
-            // Strategy 1: Target specific NotebookLM dialog elements
-            // Look for mat-dialog-container or similar dialog containers first
-            const dialogContainers = document.querySelectorAll('mat-dialog-container, [role="dialog"], .cdk-overlay-pane');
+            const relevantTextareas = Array.from(allTextareas).filter(ta => ta.value && ta.value.trim().length > 0);
+            const episodeFocusTextarea = relevantTextareas.length > 0 ? relevantTextareas[relevantTextareas.length - 1] : null;
+            if (DEBUG && episodeFocusTextarea) console.log('[DEBUG] Selected last non-empty textarea in dialog:', {
+                id: episodeFocusTextarea.getAttribute('id'),
+                placeholder: episodeFocusTextarea.placeholder,
+                value: episodeFocusTextarea.value
+            });
 
-            for (const dialog of dialogContainers) {
-                // Look for textarea with custom focus content
-                const textareas = dialog.querySelectorAll('textarea');
-                const buttons = dialog.querySelectorAll('button');
-
-                for (const textarea of textareas) {
-                    // Check if this textarea might be for custom prompts
-                    const hasCustomContent = textarea.value && textarea.value.trim().length > 0;
-                    const hasRelevantAttributes =
-                        textarea.getAttribute('formcontrolname')?.includes('episodeFocus') ||
-                        textarea.getAttribute('formcontrolname')?.includes('focus') ||
-                        textarea.placeholder?.toLowerCase().includes('focus') ||
-                        textarea.placeholder?.toLowerCase().includes('自訂') ||
-                        textarea.className?.toLowerCase().includes('focus') ||
-                        textarea.className?.toLowerCase().includes('episode');
-
-                    if (hasCustomContent || hasRelevantAttributes) {
-                        episodeFocusTextarea = textarea;
-                        if (DEBUG) console.log('[DEBUG] Found textarea in dialog using Strategy 1:', {
-                            formControlName: textarea.getAttribute('formcontrolname'),
-                            placeholder: textarea.placeholder,
-                            className: textarea.className,
-                            hasContent: hasCustomContent,
-                            contentPreview: textarea.value?.substring(0, 50) + '...'
-                        });
-
-                        // Look for corresponding generate button in the same dialog
-                        for (const button of buttons) {
-                            const buttonText = button.textContent?.trim();
-                            const isGenerateButton =
-                                buttonText === '生成' ||
-                                buttonText === 'Generate' ||
-                                buttonText?.includes('生成') ||
-                                buttonText?.includes('Generate') ||
-                                button.type === 'submit' ||
-                                button.getAttribute('color') === 'primary' ||
-                                button.className?.toLowerCase().includes('generate') ||
-                                button.className?.toLowerCase().includes('primary');
-
-                            if (isGenerateButton) {
-                                generateButton = button;
-                                if (DEBUG) console.log('[DEBUG] Found button in dialog using Strategy 1:', {
-                                    text: buttonText,
-                                    type: button.type,
-                                    color: button.getAttribute('color'),
-                                    className: button.className
-                                });
-                                break;
-                            }
-                        }
-
-                        if (generateButton) break;
-                    }
-                }
-
-                if (episodeFocusTextarea && generateButton) break;
-            }
-
-            // Strategy 2: Original specific selectors (as fallback)
-            if (!generateButton || !episodeFocusTextarea) {
-                generateButton = generateButton || document.querySelector('button.generate-button');
-                episodeFocusTextarea = episodeFocusTextarea || document.querySelector('textarea[formcontrolname="episodeFocus"]');
-            }
-
-            // Strategy 3: More general document-wide search
-            if (!generateButton || !episodeFocusTextarea) {
-                // Look for textareas with focus-related attributes or content
-                const allTextareas = document.querySelectorAll('textarea');
-                for (const textarea of allTextareas) {
-                    const placeholder = textarea.placeholder?.toLowerCase() || '';
-                    const formControlName = textarea.getAttribute('formcontrolname')?.toLowerCase() || '';
-                    const className = textarea.className?.toLowerCase() || '';
-                    const hasContent = textarea.value && textarea.value.trim().length > 10;
-
-                    // Check for indicators that this is a custom prompt textarea
-                    if ((placeholder.includes('focus') ||
-                        placeholder.includes('自訂') ||
-                        placeholder.includes('custom') ||
-                        formControlName.includes('focus') ||
-                        formControlName.includes('episode') ||
-                        className.includes('focus') ||
-                        className.includes('episode')) && hasContent) {
-                        episodeFocusTextarea = textarea;
-                        if (DEBUG) console.log('[DEBUG] Found textarea using Strategy 3:', {
-                            placeholder,
-                            formControlName,
-                            className,
-                            contentLength: textarea.value?.length
-                        });
-                        break;
-                    }
-                }
-
-                // Look for buttons that might be the generate button
-                if (!generateButton) {
-                    const allButtons = document.querySelectorAll('button');
-                    for (const button of allButtons) {
-                        const text = button.textContent?.trim() || '';
-                        const className = button.className?.toLowerCase() || '';
-                        const type = button.type?.toLowerCase() || '';
-
-                        if (text === '生成' ||
-                            text === 'Generate' ||
-                            text.includes('生成') ||
-                            text.includes('Generate') ||
-                            (type === 'submit' && className.includes('primary')) ||
-                            className.includes('generate')) {
-                            generateButton = button;
-                            if (DEBUG) console.log('[DEBUG] Found button using Strategy 3:', {
-                                text,
-                                className,
-                                type
-                            });
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Strategy 4: Legacy fallback selectors
-            if (!generateButton) {
-                generateButton = document.querySelector('mat-dialog-actions button[color="primary"]');
-            }
-            if (!episodeFocusTextarea) {
-                episodeFocusTextarea = document.querySelector('textarea.episode-focus-input');
-            }
-
-            // Debug: Enhanced logging when elements are found
-            if (generateButton && episodeFocusTextarea) {
-                if (DEBUG) console.log('[DEBUG] ✅ Custom voice summary dialog elements found:', {
-                    button: {
-                        text: generateButton.textContent?.trim(),
-                        className: generateButton.className,
-                        type: generateButton.type,
-                        outerHTML: generateButton.outerHTML.substring(0, 150) + '...'
-                    },
-                    textarea: {
-                        formControlName: episodeFocusTextarea.getAttribute('formcontrolname'),
-                        placeholder: episodeFocusTextarea.placeholder,
-                        className: episodeFocusTextarea.className,
-                        valueLength: episodeFocusTextarea.value?.length || 0,
-                        valuePreview: episodeFocusTextarea.value?.substring(0, 100) + '...',
-                        outerHTML: episodeFocusTextarea.outerHTML.substring(0, 150) + '...'
-                    }
-                });
-            } else if (Math.random() < 0.02) { // Occasional logging when elements are not found
-                if (DEBUG) console.log('[DEBUG] ❌ Custom voice summary dialog elements not found:', {
-                    generateButton: !!generateButton,
-                    episodeFocusTextarea: !!episodeFocusTextarea
+            // Gather potential generate buttons and pick the last one if multiple found
+            const potentialGenerateButtons = Array.from(allButtons).filter(btn => {
+                const text = btn.textContent?.trim();
+                return text === '生成' || text === 'Generate' || text?.includes('生成') || text?.includes('Generate');
+            });
+            if (potentialGenerateButtons.length > 0) {
+                generateButton = potentialGenerateButtons[potentialGenerateButtons.length - 1];
+                if (DEBUG) console.log('[DEBUG] Selected last matching generate button in dialog:', {
+                    text: generateButton.textContent?.trim(),
+                    type: generateButton.type
                 });
             }
 
-            // Check if this is a new button (different from the last one we saw)
-            const isNewButton = generateButton && generateButton !== lastGenerateButton;
+            if (generateButton) {
+                // Avoid registering the same handlers multiple times on the same element
+                if (generateButton.dataset.notebooklmVoiceGenerateListenerAttached === 'true') {
+                    if (DEBUG) console.log('[DEBUG] Listener already attached to generate button - skipping.');
+                    return;
+                }
 
-            if (generateButton && episodeFocusTextarea && (!generateButtonListenerAdded || isNewButton)) {
-                if (DEBUG) console.log('[DEBUG] 🎯 Adding click listener to generate button...', {
-                    isNewButton,
-                    generateButtonListenerAdded,
-                    buttonIdentity: generateButton.outerHTML.substring(0, 100) + '...'
-                });                // Add click listener to the generate button using both click and mousedown for reliability
+                if (DEBUG) console.log('[DEBUG] 🎯 Adding click listener to generate button...');
+
+                // Add click listener to the generate button using both click and mousedown for reliability
                 const clickHandler = async function (event) {
                     event.preventDefault();
 
                     try {
+                        // Find the active dialog and the current textarea when the event fires (not when handler was attached)
+                        const parentDialog = event.target.closest('configurable-form-dialog, artifact-customization-dialog') || dialog;
+                        const textareasNow = parentDialog ? parentDialog.querySelectorAll('textarea') : [];
+                        const relevantNow = Array.from(textareasNow).filter(ta => ta.value && ta.value.trim().length > 0);
+                        const episodeFocusTextareaNow = relevantNow.length > 0 ? relevantNow[relevantNow.length - 1] : null;
+
                         const now = Date.now();
-                        const promptContent = episodeFocusTextarea.value?.trim();
+                        const promptContent = episodeFocusTextareaNow?.value?.trim();
 
                         // 防止在 2 秒內重複儲存相同內容
                         const timeSinceLastSave = now - lastSaveTime;
@@ -964,7 +812,7 @@
 
                         if (DEBUG) console.log('[DEBUG] 🔥 Generate button clicked! Event type:', event.type);
                         if (DEBUG) console.log('[DEBUG] Button clicked:', this);
-                        if (DEBUG) console.log('[DEBUG] Current textarea:', episodeFocusTextarea);
+                        if (DEBUG) console.log('[DEBUG] Current textarea used at click time:', episodeFocusTextareaNow);
 
                         if (DEBUG) console.log('[DEBUG] Textarea content at click time:', {
                             length: promptContent?.length || 0,
@@ -995,10 +843,10 @@
 
                             // Additional debugging: check if the textarea element is still valid
                             if (DEBUG) console.log('[DEBUG] Textarea validation:', {
-                                exists: !!episodeFocusTextarea,
-                                inDocument: document.contains(episodeFocusTextarea),
-                                value: episodeFocusTextarea?.value,
-                                valueLength: episodeFocusTextarea?.value?.length
+                                exists: !!episodeFocusTextareaNow,
+                                inDocument: document.contains(episodeFocusTextareaNow),
+                                value: episodeFocusTextareaNow?.value,
+                                valueLength: episodeFocusTextareaNow?.value?.length
                             });
                         }
                     } catch (error) {
@@ -1006,31 +854,15 @@
                     }
                 };
 
-                // 移除舊的監聽器（如果存在）
-                if (lastGenerateButton && lastGenerateButton !== generateButton) {
-                    lastGenerateButton.removeEventListener('click', clickHandler, { capture: true });
-                    lastGenerateButton.removeEventListener('mousedown', clickHandler, { capture: true });
-                }
-
-                // Add listeners for multiple event types to ensure we catch the click
+                // Attach once per button and mark as attached to avoid duplicates
                 generateButton.addEventListener('click', clickHandler, { capture: true });
                 generateButton.addEventListener('mousedown', clickHandler, { capture: true });
+                generateButton.dataset.notebooklmVoiceGenerateListenerAttached = 'true';
 
-                generateButtonListenerAdded = true;
-                lastGenerateButton = generateButton;
-                if (DEBUG) console.log('[DEBUG] ✅ Custom voice summary dialog listener added successfully');
-            }
-
-            // Reset flag if dialog is no longer present
-            if (!generateButton || !episodeFocusTextarea) {
-                if (generateButtonListenerAdded && Math.random() < 0.01) { // Occasional logging to avoid spam
-                    if (DEBUG) console.log('[DEBUG] 🔄 Dialog elements no longer present, resetting listener flag');
-                }
-                generateButtonListenerAdded = false;
-                lastGenerateButton = null;
+                if (DEBUG) console.log('[DEBUG] ✅ Custom dialog listener added successfully');
             }
         } catch (error) {
-            console.error('Error monitoring custom voice summary dialog:', error);
+            console.error('Error monitoring custom dialog:', error);
         }
     }
 
