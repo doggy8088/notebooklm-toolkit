@@ -1,5 +1,13 @@
 # Changelog
 
+- 0.12.0 (2026/6/26)
+
+  - fix: 因應 NotebookLM 將心智圖改以應用程式 iframe 呈現，改用 `postMessage` 橋接取得心智圖 Markdown
+  - fix: 在 NotebookLM artifact 標頭補上「複製心智圖內容」按鈕，讓使用者可從新版心智圖版面直接複製內容
+  - fix: 改善心智圖 SVG 偵測條件，支援新版節點與連線結構
+  - chore: 移除不需要的 `clipboardWrite`、`scripting`、`webNavigation` 權限與額外 host permission
+  - build: 重新產生 Tailwind CSS 與追蹤的前端資產
+
 - 0.11.0 (2025/12/7)
 
   - fix: 因應 NotebookLM 介面更新，調整對話框按鈕選取問題
