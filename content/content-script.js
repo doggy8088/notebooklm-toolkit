@@ -1,11 +1,33 @@
 (async function () {
     'use strict';
 
+    if (window.__notebooklmToolkitContentScriptLoaded) {
+        return;
+    }
+    window.__notebooklmToolkitContentScriptLoaded = true;
+
     const DEBUG = false;
 
     const hotkeyHandlers = [
         { test: matchHotkey({ ctrl: true, alt: true }, 'b'), handler: handleCtrlAltB },
     ];
+    const MINDMAP_COPY_BUTTON_CLASS = 'copy-mindmap-btn';
+    const MINDMAP_COPY_MESSAGE_SOURCE = 'notebooklm-toolkit';
+    const NOTEBOOKLM_ORIGIN = 'https://notebooklm.google.com';
+    const NOTEBOOKLM_APP_FRAME_SELECTOR = 'iframe[src*=".usercontent.goog"]';
+    let lastPostedMindmapMarkdown = '';
+    let lastPostedMindmapMarkdownAt = 0;
+    const artifactViewerMindmapMarkdown = {
+        iframeSrc: '',
+        markdown: '',
+        nodeCount: 0,
+        loading: false,
+        lastRequestedAt: 0,
+        lastSuccessAt: 0,
+        error: ''
+    };
+
+    registerMindmapClipboardBridge();
 
     function findEpisodeFocusTextarea(root) {
         const scope = root || document;
@@ -32,7 +54,10 @@
         const svg = findMindMapSvg();
         if (svg) {
             await insertDownloadMarkdownButton(svg);
+            publishMindmapMarkdownToParent(svg);
         }
+        await insertArtifactViewerMindmapCopyButton();
+        refreshArtifactViewerMindmapMarkdown();
 
         // Check for custom dialog and add event listener
         monitorCustomVoiceSummaryDialog();
@@ -114,120 +139,533 @@
 
 
     function findMindMapSvg(event) {
-        const svgs = document.querySelectorAll('svg');
-        const matchingSvgs = [];
+        const svgs = Array.from(document.querySelectorAll('svg'));
+        const mindmapSvgs = svgs.filter(svg =>
+            svg.querySelector('g.node text.node-name') &&
+            svg.querySelector('path.link')
+        );
 
-        svgs.forEach(svg => {
+        if (mindmapSvgs.length > 0) {
+            return findLargestVisibleElement(mindmapSvgs);
+        }
+
+        const matchingSvgs = svgs.filter(svg => {
             const width = svg.getAttribute('width');
             const height = svg.getAttribute('height');
-            if (width === '100%' && height === '100%') {
-                matchingSvgs.push(svg);
-            }
+            return width === '100%' && height === '100%';
         });
 
         if (matchingSvgs.length === 1) {
             return matchingSvgs[0];
         }
+
+        return null;
+    }
+
+    async function insertArtifactViewerMindmapCopyButton() {
+        if (window.top !== window) {
+            return;
+        }
+
+        const iframe = document.querySelector(NOTEBOOKLM_APP_FRAME_SELECTOR);
+        if (!iframe) {
+            return;
+        }
+
+        const artifactViewer = iframe.closest('artifact-viewer') || document.querySelector('artifact-viewer');
+        const header = artifactViewer?.querySelector('.artifact-header') || document.querySelector('.artifact-header');
+        if (!header || header.querySelector(`.${MINDMAP_COPY_BUTTON_CLASS}`)) {
+            return;
+        }
+
+        const referenceButton = findArtifactHeaderReferenceButton(header);
+        const button = referenceButton ? referenceButton.cloneNode(true) : createMindmapCopyButton();
+
+        prepareMindmapCopyButton(button);
+        button.addEventListener('click', async event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const markdown = artifactViewerMindmapMarkdown.markdown;
+            if (!markdown) {
+                refreshArtifactViewerMindmapMarkdown(true);
+                showMindmapCopyFeedback(button, false);
+                return;
+            }
+
+            const copied = await writeTextToClipboard(markdown);
+            showMindmapCopyFeedback(button, copied);
+        });
+
+        header.insertBefore(button, referenceButton || null);
+        refreshArtifactViewerMindmapMarkdown(true);
+    }
+
+    async function refreshArtifactViewerMindmapMarkdown(force = false) {
+        if (window.top !== window) {
+            return null;
+        }
+
+        const iframe = document.querySelector(NOTEBOOKLM_APP_FRAME_SELECTOR);
+        if (!iframe) {
+            resetArtifactViewerMindmapCache();
+            updateArtifactViewerMindmapButtons();
+            return null;
+        }
+
+        const src = iframe.getAttribute('src') || '';
+        if (artifactViewerMindmapMarkdown.iframeSrc !== src) {
+            resetArtifactViewerMindmapCache(src);
+        }
+
+        const now = Date.now();
+        if (artifactViewerMindmapMarkdown.loading) {
+            return artifactViewerMindmapMarkdown.markdown || null;
+        }
+        if (!force && artifactViewerMindmapMarkdown.markdown) {
+            return artifactViewerMindmapMarkdown.markdown;
+        }
+        if (!force && now - artifactViewerMindmapMarkdown.lastRequestedAt < 2000) {
+            return artifactViewerMindmapMarkdown.markdown || null;
+        }
+
+        const requested = requestMindmapMarkdownFromFrame(iframe);
+        if (requested) {
+            artifactViewerMindmapMarkdown.loading = true;
+            artifactViewerMindmapMarkdown.lastRequestedAt = now;
+            artifactViewerMindmapMarkdown.error = '';
+            updateArtifactViewerMindmapButtons();
+            window.setTimeout(() => {
+                if (artifactViewerMindmapMarkdown.loading &&
+                    artifactViewerMindmapMarkdown.lastRequestedAt === now) {
+                    artifactViewerMindmapMarkdown.loading = false;
+                    if (!artifactViewerMindmapMarkdown.markdown) {
+                        artifactViewerMindmapMarkdown.error = 'Mindmap markdown unavailable.';
+                    }
+                    updateArtifactViewerMindmapButtons();
+                }
+            }, 1500);
+        } else if (!artifactViewerMindmapMarkdown.markdown) {
+            artifactViewerMindmapMarkdown.error = 'Mindmap frame unavailable.';
+            updateArtifactViewerMindmapButtons();
+        }
+
+        return artifactViewerMindmapMarkdown.markdown || null;
+    }
+
+    function requestMindmapMarkdownFromFrame(iframe) {
+        if (!iframe?.contentWindow) {
+            return false;
+        }
+
+        iframe.contentWindow.postMessage({
+            source: MINDMAP_COPY_MESSAGE_SOURCE,
+            type: 'requestMindmapMarkdown'
+        }, getMindmapFrameTargetOrigin(iframe));
+        return true;
+    }
+
+    function getMindmapFrameTargetOrigin(iframe) {
+        const src = iframe.getAttribute('src') || '';
+        try {
+            const url = new URL(src);
+            if (url.protocol === 'blob:') {
+                return new URL(url.pathname).origin;
+            }
+            return url.origin;
+        } catch (_error) {
+            return '*';
+        }
+    }
+
+    function resetArtifactViewerMindmapCache(iframeSrc = '') {
+        artifactViewerMindmapMarkdown.iframeSrc = iframeSrc;
+        artifactViewerMindmapMarkdown.markdown = '';
+        artifactViewerMindmapMarkdown.nodeCount = 0;
+        artifactViewerMindmapMarkdown.loading = false;
+        artifactViewerMindmapMarkdown.lastRequestedAt = 0;
+        artifactViewerMindmapMarkdown.lastSuccessAt = 0;
+        artifactViewerMindmapMarkdown.error = '';
+    }
+
+    function updateArtifactViewerMindmapButtons() {
+        document.querySelectorAll(`.${MINDMAP_COPY_BUTTON_CLASS}`).forEach(button => {
+            button.dataset.mindmapReady = artifactViewerMindmapMarkdown.markdown ? 'true' : 'false';
+            button.dataset.mindmapLoading = artifactViewerMindmapMarkdown.loading ? 'true' : 'false';
+            button.dataset.mindmapNodeCount = String(artifactViewerMindmapMarkdown.nodeCount || 0);
+            if (artifactViewerMindmapMarkdown.error) {
+                button.dataset.mindmapError = artifactViewerMindmapMarkdown.error;
+            } else {
+                delete button.dataset.mindmapError;
+            }
+        });
+    }
+
+    function findArtifactHeaderReferenceButton(header) {
+        return header.querySelector('button[aria-label="更多選項"], button[mattooltip="更多選項"]') ||
+            header.querySelector('button[aria-label="展開"], button[mattooltip="展開檢視工具"]') ||
+            header.querySelector('button');
     }
 
     async function insertDownloadMarkdownButton(svgElement) {
-        const mindmapActionsDiv = document.querySelector('.mindmap-actions');
+        if (!svgElement || document.querySelector(`.${MINDMAP_COPY_BUTTON_CLASS}`)) {
+            return;
+        }
+
+        const insertionPoint = findMindmapButtonInsertionPoint();
         let data = {}; // Initialize data object
 
-        if (mindmapActionsDiv) {
-            const buttons = mindmapActionsDiv.querySelectorAll('button');
-            if (buttons.length >= 2) {
-                const secondButton = buttons[1];
-                const clonedButton = secondButton.cloneNode(true);
+        if (insertionPoint) {
+            const { container, referenceButton, sourceButton } = insertionPoint;
+            const clonedButton = sourceButton ? sourceButton.cloneNode(true) : createMindmapCopyButton();
 
-                clonedButton.addEventListener('click', async (event) => {
-                    event.preventDefault();
-                    const markdownOutput = convertMindmapToMarkdown(svgElement.outerHTML);
+            prepareMindmapCopyButton(clonedButton);
+            clonedButton.addEventListener('click', async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
 
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        try {
-                            await navigator.clipboard.writeText(markdownOutput);
-                        } catch (err) {
-                            console.error('寫入剪貼簿失敗:', err);
-                        }
-                    } else {
-                        const textarea = document.createElement('textarea');
-                        textarea.value = markdownOutput;
-                        document.body.appendChild(textarea);
-                        textarea.select();
-                        try {
-                            document.execCommand('copy');
-                        } catch (err) {
-                            console.error('寫入剪貼簿失敗:', err);
-                        }
-                        document.body.removeChild(textarea);
-                    }
+                const currentSvgElement = findMindMapSvg() || svgElement;
+                const markdownOutput = convertMindmapToMarkdown(currentSvgElement.outerHTML);
+                const copied = await copyMindmapMarkdown(markdownOutput);
+                showMindmapCopyFeedback(clonedButton, copied);
+            });
 
-                    // const blob = new Blob([markdownOutput], { type: 'text/markdown' });
-                    // const url = URL.createObjectURL(blob);
-                    // const a = document.createElement('a');
-                    // a.href = url;
-                    // a.download = 'mindmap.md';
-                    // document.body.appendChild(a);
-                    // a.click();
-                    // document.body.removeChild(a);
-                    // URL.revokeObjectURL(url);
-                });
-
-                const matIconElement = clonedButton.querySelector('mat-icon');
-                if (matIconElement) {
-
-                    if (matIconElement.textContent === 'content_copy') {
-                        // If the text content is already set to 'content_copy', we can skip updating it
-                        // This avoids unnecessary changes if the button is already set up correctly
-                        data = {
-                            success: false,
-                            message: 'Button cloned and inserted successfully, no need to update mat-icon text.'
-                        };
-                        return;
-                    } else {
-                        // https://marella.github.io/material-icons/demo/
-                        matIconElement.textContent = 'content_copy';
-                        matIconElement.title = chrome.i18n.getMessage('copy_mindmap_content');
-                        data = {
-                            success: true,
-                            message: 'Button cloned and inserted successfully, mat-icon text updated.'
-                        };
-                    }
-
-                } else {
-                    const iconTextSpan = clonedButton.querySelector('.mat-icon');
-                    if (iconTextSpan) {
-                        iconTextSpan.textContent = 'sim_card_download';
-                        data = {
-                            success: true,
-                            message: 'Button cloned and inserted successfully, .mat-icon text updated.'
-                        };
-                    } else {
-                        data = {
-                            success: false,
-                            message: 'Could not find the mat-icon element or its text span within the cloned button.'
-                        };
-                    }
-                }
-
-                if (data.success) {
-                    mindmapActionsDiv.insertBefore(clonedButton, secondButton);
-                }
-
-            } else {
-                data = {
-                    success: false,
-                    message: 'Less than two buttons found within .mindmap-actions.'
-                };
-            }
+            container.insertBefore(clonedButton, referenceButton || null);
+            data = {
+                success: true,
+                message: 'Mindmap copy button inserted successfully.'
+            };
         } else {
             data = {
                 success: false,
-                message: '.mindmap-actions element not found.'
+                message: 'Mindmap action container not found.'
             };
         }
         data; // Return the data object
+    }
+
+    function findLargestVisibleElement(elements) {
+        return elements
+            .map(element => {
+                const rect = element.getBoundingClientRect();
+                return { element, area: rect.width * rect.height };
+            })
+            .filter(item => item.area > 0)
+            .sort((a, b) => b.area - a.area)[0]?.element || elements[0] || null;
+    }
+
+    function findMindmapButtonInsertionPoint() {
+        const mindmapActionsDiv = document.querySelector('.mindmap-actions');
+        if (mindmapActionsDiv) {
+            const buttons = mindmapActionsDiv.querySelectorAll('button');
+            if (buttons.length >= 2) {
+                return {
+                    container: mindmapActionsDiv,
+                    referenceButton: buttons[1],
+                    sourceButton: buttons[1]
+                };
+            }
+            if (buttons.length === 1) {
+                return {
+                    container: mindmapActionsDiv,
+                    referenceButton: buttons[0],
+                    sourceButton: buttons[0]
+                };
+            }
+        }
+
+        const downloadButton = findMindmapActionButton('download');
+        if (downloadButton?.parentElement) {
+            return {
+                container: downloadButton.parentElement,
+                referenceButton: downloadButton,
+                sourceButton: downloadButton
+            };
+        }
+
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const visibleButtons = buttons.filter(button => {
+            const rect = button.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0;
+        });
+
+        if (visibleButtons.length > 0) {
+            const sourceButton = visibleButtons[visibleButtons.length - 1];
+            return {
+                container: sourceButton.parentElement,
+                referenceButton: sourceButton.nextSibling,
+                sourceButton
+            };
+        }
+
+        return null;
+    }
+
+    function findMindmapActionButton(action) {
+        const actionText = action.toLowerCase();
+        return Array.from(document.querySelectorAll('button')).find(button => {
+            const label = [
+                button.getAttribute('aria-label'),
+                button.getAttribute('title'),
+                button.getAttribute('mattooltip'),
+                button.textContent
+            ].filter(Boolean).join(' ').trim().toLowerCase();
+
+            return label.includes(actionText) ||
+                (actionText === 'download' && (label.includes('下載') || label.includes('download mindmap')));
+        });
+    }
+
+    function createMindmapCopyButton() {
+        const button = document.createElement('button');
+        const icon = document.createElement('span');
+        icon.className = 'material-symbols-outlined google-symbols';
+        icon.textContent = 'content_copy';
+        button.appendChild(icon);
+        return button;
+    }
+
+    function prepareMindmapCopyButton(button) {
+        const label = chrome.i18n.getMessage('copy_mindmap_content') || 'Copy Mindmap Content';
+        button.classList.add(MINDMAP_COPY_BUTTON_CLASS);
+        button.type = 'button';
+        button.removeAttribute('id');
+        button.removeAttribute('aria-describedby');
+        button.removeAttribute('cdk-describedby-host');
+        button.removeAttribute('aria-haspopup');
+        button.removeAttribute('aria-expanded');
+        button.removeAttribute('jslog');
+        button.setAttribute('aria-label', label);
+        button.setAttribute('title', label);
+        button.setAttribute('mattooltip', label);
+
+        const iconElement = findIconElement(button);
+        if (iconElement) {
+            iconElement.textContent = 'content_copy';
+            iconElement.setAttribute('title', label);
+        } else {
+            button.textContent = '';
+            const icon = document.createElement('span');
+            icon.className = 'material-symbols-outlined google-symbols';
+            icon.textContent = 'content_copy';
+            button.appendChild(icon);
+        }
+    }
+
+    function findIconElement(button) {
+        return button.querySelector('mat-icon, .mat-icon, .material-symbols-outlined, .google-symbols') ||
+            Array.from(button.children).find(child => {
+                const text = child.textContent?.trim();
+                return text === 'download' || text === 'sim_card_download' || text === 'content_copy';
+            });
+    }
+
+    function copyTextWithExecCommand(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-1000px';
+        textarea.style.left = '-1000px';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+
+        const selection = document.getSelection();
+        const selectedRanges = [];
+        if (selection) {
+            for (let i = 0; i < selection.rangeCount; i++) {
+                selectedRanges.push(selection.getRangeAt(i));
+            }
+        }
+
+        try {
+            textarea.focus();
+            textarea.select();
+            return document.execCommand('copy');
+        } catch (err) {
+            console.error('寫入剪貼簿失敗:', err);
+            return false;
+        } finally {
+            textarea.remove();
+            if (selection) {
+                selection.removeAllRanges();
+                selectedRanges.forEach(range => selection.addRange(range));
+            }
+        }
+    }
+
+    async function writeTextToClipboard(text) {
+        if (!text) {
+            return false;
+        }
+
+        if (copyTextWithExecCommand(text)) {
+            return true;
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (err) {
+                console.error('寫入剪貼簿失敗:', err);
+            }
+        }
+
+        return false;
+    }
+
+    async function copyMindmapMarkdown(markdownOutput) {
+        if (window.top !== window) {
+            const parentCopied = await requestParentMindmapClipboardWrite(markdownOutput);
+            if (parentCopied) {
+                return true;
+            }
+        }
+
+        return writeTextToClipboard(markdownOutput);
+    }
+
+    function requestParentMindmapClipboardWrite(text) {
+        if (!window.parent || window.parent === window) {
+            return Promise.resolve(false);
+        }
+
+        return new Promise(resolve => {
+            const requestId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            let settled = false;
+
+            const cleanup = () => {
+                settled = true;
+                window.removeEventListener('message', handleResponse);
+            };
+
+            const timeoutId = window.setTimeout(() => {
+                if (!settled) {
+                    cleanup();
+                    resolve(false);
+                }
+            }, 1500);
+
+            function handleResponse(event) {
+                const data = event.data;
+                if (!data ||
+                    data.source !== MINDMAP_COPY_MESSAGE_SOURCE ||
+                    data.type !== 'copyMindmapMarkdownResult' ||
+                    data.requestId !== requestId) {
+                    return;
+                }
+
+                window.clearTimeout(timeoutId);
+                cleanup();
+                resolve(Boolean(data.success));
+            }
+
+            window.addEventListener('message', handleResponse);
+            window.parent.postMessage({
+                source: MINDMAP_COPY_MESSAGE_SOURCE,
+                type: 'copyMindmapMarkdown',
+                requestId,
+                text
+            }, NOTEBOOKLM_ORIGIN);
+        });
+    }
+
+    function registerMindmapClipboardBridge() {
+        if (window.top !== window) {
+            window.addEventListener('message', event => {
+                const data = event.data;
+                if (event.origin !== NOTEBOOKLM_ORIGIN ||
+                    !data ||
+                    data.source !== MINDMAP_COPY_MESSAGE_SOURCE ||
+                    data.type !== 'requestMindmapMarkdown') {
+                    return;
+                }
+
+                const svgElement = findMindMapSvg();
+                if (svgElement) {
+                    publishMindmapMarkdownToParent(svgElement, true);
+                }
+            });
+            return;
+        }
+
+        window.addEventListener('message', async event => {
+            if (!isMindmapFrameMessage(event)) {
+                return;
+            }
+
+            const data = event.data;
+            if (!data || data.source !== MINDMAP_COPY_MESSAGE_SOURCE) {
+                return;
+            }
+
+            if (data.type === 'mindmapMarkdownAvailable' && typeof data.text === 'string') {
+                artifactViewerMindmapMarkdown.markdown = data.text;
+                artifactViewerMindmapMarkdown.nodeCount = data.nodeCount || 0;
+                artifactViewerMindmapMarkdown.loading = false;
+                artifactViewerMindmapMarkdown.lastSuccessAt = Date.now();
+                artifactViewerMindmapMarkdown.error = '';
+                updateArtifactViewerMindmapButtons();
+                return;
+            }
+
+            if (data.type !== 'copyMindmapMarkdown' || typeof data.text !== 'string') {
+                return;
+            }
+
+            const success = await writeTextToClipboard(data.text);
+            const responseOrigin = event.origin && event.origin !== 'null' ? event.origin : '*';
+            event.source?.postMessage({
+                source: MINDMAP_COPY_MESSAGE_SOURCE,
+                type: 'copyMindmapMarkdownResult',
+                requestId: data.requestId,
+                success
+            }, responseOrigin);
+        });
+    }
+
+    function isMindmapFrameMessage(event) {
+        if (typeof event.origin === 'string' && event.origin.endsWith('.usercontent.goog')) {
+            return true;
+        }
+
+        return Array.from(document.querySelectorAll(NOTEBOOKLM_APP_FRAME_SELECTOR))
+            .some(iframe => iframe.contentWindow === event.source);
+    }
+
+    function publishMindmapMarkdownToParent(svgElement, force = false) {
+        if (window.top === window || !window.parent || !svgElement) {
+            return;
+        }
+
+        const now = Date.now();
+        const markdownOutput = convertMindmapToMarkdown(svgElement.outerHTML);
+        if (!markdownOutput) {
+            return;
+        }
+        if (!force && markdownOutput === lastPostedMindmapMarkdown && now - lastPostedMindmapMarkdownAt < 5000) {
+            return;
+        }
+
+        lastPostedMindmapMarkdown = markdownOutput;
+        lastPostedMindmapMarkdownAt = now;
+        window.parent.postMessage({
+            source: MINDMAP_COPY_MESSAGE_SOURCE,
+            type: 'mindmapMarkdownAvailable',
+            text: markdownOutput,
+            nodeCount: svgElement.querySelectorAll('g.node').length
+        }, NOTEBOOKLM_ORIGIN);
+    }
+
+    function showMindmapCopyFeedback(button, copied = true) {
+        const iconElement = findIconElement(button);
+        if (!iconElement) return;
+
+        iconElement.textContent = copied ? 'check' : 'error';
+        window.setTimeout(() => {
+            iconElement.textContent = 'content_copy';
+        }, 1200);
     }
 
     async function handleCtrlAltB() {

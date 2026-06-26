@@ -28,8 +28,11 @@
         "content/content-script.js"
       ],
       "matches": [
-        "https://notebooklm.google.com/*"
-      ]
+        "https://notebooklm.google.com/*",
+        "https://*.scf.usercontent.goog/*"
+      ],
+      "all_frames": true,
+      "match_origin_as_fallback": true
     }
   ],
   "host_permissions": [
